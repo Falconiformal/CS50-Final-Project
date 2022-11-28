@@ -16,4 +16,7 @@ while running:
     # background
     screen.fill((255, 255, 255))
 
+    # update display
+    pygame.display.flip()
+
 pygame.quit()
