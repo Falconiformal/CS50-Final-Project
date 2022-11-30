@@ -13,8 +13,8 @@ from pygame.locals import (
 )
 
 # window dimensions
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 800
 
 # define player sprite
 class Player(pygame.sprite.Sprite):
@@ -53,6 +53,9 @@ pygame.init()
 # set screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+# set background
+bg = pygame.image.load('grasstile.png').convert()
+
 # set player
 player = Player()
 
@@ -78,6 +81,15 @@ while running:
 
     # background
     screen.fill((0, 0, 0))
+   
+    i = 0
+    j = 0
+    while i < SCREEN_WIDTH:
+        while j < SCREEN_HEIGHT:
+            screen.blit(bg, (i, j))
+            j += bg.get_height()
+        j = 0
+        i += bg.get_width()
 
     # draw player on screen
     screen.blit(player.surf, player.rect)
