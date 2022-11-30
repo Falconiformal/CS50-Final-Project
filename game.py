@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         super(Player, self).__init__()
         self.surf = pygame.Surface((30, 30))
         self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect()
+        self.rect = self.surf.get_rect(center=(600, 400))
     
     # moves sprite with keypresses
     def update(self, pressed_keys):
@@ -92,6 +92,8 @@ while running:
         i += bg.get_width()
 
     # draw player on screen
+    x = 600
+    y = 400
     screen.blit(player.surf, player.rect)
 
     # update display
