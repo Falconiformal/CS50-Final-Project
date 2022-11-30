@@ -20,20 +20,45 @@ SCREEN_HEIGHT = 800
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.image.load(player_frames[4]).convert()
-        self.surf.fill((255, 255, 255))
+        self.surf = player_frames[pframe].convert()
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
     
     # moves sprite with keypresses
     def update(self, pressed_keys):
+        global pframe
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
+            if pframe in [4, 5, 6]:
+                pframe += 1
+            else:
+                pframe = 4
+            player.surf = player_frames[pframe].convert()
+            player.surf.set_colorkey((255, 255, 255), RLEACCEL)
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
+            if pframe in [0, 1, 2]:
+                pframe += 1
+            else:
+                pframe = 0
+            player.surf = player_frames[pframe].convert()
+            player.surf.set_colorkey((255, 255, 255), RLEACCEL)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
+            if pframe in [12, 13, 14]:
+                pframe += 1
+            else:
+                pframe = 12
+            player.surf = player_frames[pframe].convert()
+            player.surf.set_colorkey((255, 255, 255), RLEACCEL)
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
+            if pframe in [8, 9, 10]:
+                pframe += 1
+            else:
+                pframe = 8
+            player.surf = player_frames[pframe].convert()
+            player.surf.set_colorkey((255, 255, 255), RLEACCEL)
         # set screen boundaries
         if self.rect.left < 0:
             self.rect.left = 0
@@ -43,32 +68,33 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
-
-# player animation frames
-player_frames = [
-    'pixilart-frames/pixil-frame-0.png',
-    'pixilart-frames/pixil-frame-1.png',
-    'pixilart-frames/pixil-frame-2.png',
-    'pixilart-frames/pixil-frame-3.png',
-    'pixilart-frames/pixil-frame-4.png',
-    'pixilart-frames/pixil-frame-5.png',
-    'pixilart-frames/pixil-frame-6.png',
-    'pixilart-frames/pixil-frame-7.png',
-    'pixilart-frames/pixil-frame-8.png',
-    'pixilart-frames/pixil-frame-9.png',
-    'pixilart-frames/pixil-frame-10.png',
-    'pixilart-frames/pixil-frame-11.png',
-    'pixilart-frames/pixil-frame-12.png',
-    'pixilart-frames/pixil-frame-13.png',
-    'pixilart-frames/pixil-frame-14.png',
-    'pixilart-frames/pixil-frame-15.png'
-    ]
             
 # clock setup (framerate)
 clock = pygame.time.Clock()
 
 # initialize
-pygame.init()  
+pygame.init()
+
+# player animation frames
+pframe = 4
+player_frames = [
+    pygame.image.load('pixilart-frames/pixil-frame-0.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-1.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-2.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-3.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-4.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-5.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-6.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-7.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-8.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-9.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-10.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-11.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-12.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-13.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-14.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-15.png')
+    ]
 
 # set screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
