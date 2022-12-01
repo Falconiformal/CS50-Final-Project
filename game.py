@@ -74,16 +74,16 @@ class Player(pygame.sprite.Sprite):
 class Building(pygame.sprite.Sprite):
     def __init__(self):
         super(Building, self).__init__()
-        self.surf = pygame.Surface(20, 10) # check on what 20, 10 represents
+        self.surf = pygame.Surface((10, 10))
         self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect(center=(200, 200)) # these would need to be the real locations of the buildings
+        self.rect = self.surf.get_rect(center=(600, 400)) # these would need to be the real locations of the buildings
         
 
 # define tourist class
 class Tourist(pygame.sprite.Sprite):
     def __init__(self):
         super(Tourist, self).__init__()
-        self.surf = pygame.Surface(20, 10) # check on what 20, 10 represents
+        self.surf = pygame.Surface((20, 10))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect(
             center=(
@@ -122,16 +122,28 @@ player_frames = [
     pygame.image.load('pixilart-frames/pixil-frame-13.png'),
     pygame.image.load('pixilart-frames/pixil-frame-14.png'),
     pygame.image.load('pixilart-frames/pixil-frame-15.png')
-    ]
+]
 
 # set screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # set background
 bg = pygame.image.load('grasstile.png').convert()
+pathmap = [
+    pygame.image.load('yardmaps/pixil-frame-0.png').convert(),
+    pygame.image.load('yardmaps/pixil-frame-1.png').convert(),
+    pygame.image.load('yardmaps/pixil-frame-2.png').convert(),
+    pygame.image.load('yardmaps/pixil-frame-3.png').convert(),
+    pygame.image.load('yardmaps/pixil-frame-4.png').convert(),
+    pygame.image.load('yardmaps/pixil-frame-5.png').convert()
+]
 
 # set player
 player = Player()
+
+# creates event to add tourist
+ADDTOURIST = pygame.USEREVENT + 1
+pygame.time.set_timer(ADDTOURIST, 1000) # adds a tourist every second
 
 # set building (temporary)
 building = Building()
@@ -142,6 +154,7 @@ buildings.add(building)
 tourists = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
+all_sprites.add(building)
 
 # game loop
 running = True
@@ -156,6 +169,11 @@ while running:
         # window close
         elif event.type == QUIT:
             running = False
+        # add tourist
+        elif event.type == ADDTOURIST:
+            new_tourist = Tourist()
+            tourists.add(new_tourist)
+            all_sprites.add(new_tourist)
 
     # record keys pressed
     pressed_keys = pygame.key.get_pressed()
@@ -163,9 +181,13 @@ while running:
     # update player sprite
     player.update(pressed_keys)
 
+    # update tourist
+    tourists.update()
+
     # background
     screen.fill((0, 0, 0))
-   
+    
+    # iterates through screen width and screen height to set down green grass tiles
     i = 0
     j = 0
     while i < SCREEN_WIDTH:
@@ -174,6 +196,14 @@ while running:
             j += bg.get_height()
         j = 0
         i += bg.get_width()
+
+    # lays down six path tiles
+    for k in range(3):
+        pathmap[k].set_colorkey((255, 255, 255), RLEACCEL)
+        pathmap[k + 3].set_colorkey((255, 255, 255), RLEACCEL)
+        screen.blit(pathmap[k], (k * pathmap[k].get_width(), 0))
+        screen.blit(pathmap[k + 3], (k * pathmap[k].get_width(), pathmap[k].get_height()))
+
 
     # draw player, buildings, tourists on screen
     for sprite in all_sprites:
