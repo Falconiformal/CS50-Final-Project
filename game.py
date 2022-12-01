@@ -1,4 +1,5 @@
 import pygame
+import random
 
 # pygame.locals gives key coordinates
 from pygame.locals import (
@@ -69,6 +70,33 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
             
+# define building class
+class Building(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Building, self).__init__()
+        self.surf = pygame.Surface(20, 10) # check on what 20, 10 represents
+        self.surf.fill((255, 255, 255))
+        self.rect = self.surf.get_rect(center=(200, 200)) # these would need to be the real locations of the buildings
+        
+
+# define tourist class
+class Tourist(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Tourist, self).__init__()
+        self.surf = pygame.Surface(20, 10) # check on what 20, 10 represents
+        self.surf.fill((255, 255, 255))
+        self.rect = self.surf.get_rect(
+            center=(
+                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
+                random.randint(0, SCREEN_HEIGHT),
+            ) # these would set random locations for the tourists beyond right edge
+        )
+        self.speed = random.randint(5, 20)
+    def update(self):
+        self.rect.move_ip(-self.speed, 0) # this moves left, could change to make random?
+        if self.rect.right < 0:
+            self.kill()
+
 # clock setup (framerate)
 clock = pygame.time.Clock()
 
@@ -105,6 +133,16 @@ bg = pygame.image.load('grasstile.png').convert()
 # set player
 player = Player()
 
+# set building (temporary)
+building = Building()
+
+# create sprite groups
+buildings = pygame.sprite.Group()
+buildings.add(building)
+tourists = pygame.sprite.Group()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(player)
+
 # game loop
 running = True
 
@@ -137,10 +175,10 @@ while running:
         j = 0
         i += bg.get_width()
 
-    # draw player on screen
-    x = 600
-    y = 400
-    screen.blit(player.surf, player.rect)
+    # draw player, buildings, tourists on screen
+    for sprite in all_sprites:
+        screen.blit(sprite.surf, sprite.rect)
+    # screen.blit(player.surf, player.rect)
 
     # update display
     pygame.display.flip()
