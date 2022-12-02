@@ -60,23 +60,36 @@ class Player(pygame.sprite.Sprite):
                 pframe = 8
             player.surf = player_frames[pframe].convert()
             player.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        # set screen boundaries
-        if self.rect.left < 0:
-            self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
-        if self.rect.top <= 0:
-            self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+        # set screen boundaries; player sprite image has extra border space, numbers here adjust for that buffer
+        if self.rect.left < -30:
+            self.rect.left = -30
+        if self.rect.right > SCREEN_WIDTH + 35:
+            self.rect.right = SCREEN_WIDTH + 35
+        if self.rect.top <= -10:
+            self.rect.top = -10
+        if self.rect.bottom >= SCREEN_HEIGHT + 10:
+            self.rect.bottom = SCREEN_HEIGHT + 10
+        # player hitbox
+        self.hitbox = pygame.Rect(self.rect.left + 35, self.rect.top + 50, 25, 40)
+        # building collisions
+        for building in buildings:
+            if pygame.Rect.colliderect(self.hitbox, building.rect):
+                if self.hitbox.left + 5 >= building.rect.right:
+                    self.rect.left = building.rect.right - 35
+                elif self.hitbox.right - 5 <= building.rect.left:
+                    self.rect.right = building.rect.left + 40
+                elif self.hitbox.top + 5 >= building.rect.bottom:
+                    self.rect.top = building.rect.bottom - 50
+                elif self.hitbox.bottom - 5 <= building.rect.top:
+                    self.rect.bottom = building.rect.top + 10
             
 # define building class
 class Building(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, name, x, y):
         super(Building, self).__init__()
-        self.surf = pygame.Surface((10, 10))
-        self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect(center=(625, 200)) # these would need to be the real locations of the buildings
+        self.surf = pygame.image.load(name).convert()
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(x, y)) # these would need to be the real locations of the buildings
         
 
 # define tourist class
@@ -139,6 +152,13 @@ player_frames = [
     pygame.image.load('pixilart-frames/pixil-frame-15.png')
 ]
 
+# building skins and locations
+building_list = {
+    'Grays': ['buildings/grays.png', 1132, 322],
+    'Stoughton': ['buildings/stoughton.png', 170, 518],
+    'Hollis': ['buildings/stoughton.png', 386, 518]
+}
+
 # set screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
@@ -159,18 +179,22 @@ player = Player()
 # creates event to add tourist
 ADDTOURIST = pygame.USEREVENT + 1
 pygame.time.set_timer(ADDTOURIST, 250) # adds 4 tourists every second
-  
-# set building (temporary)
-building = Building()
+
 
 # create sprite groups
 buildings = pygame.sprite.Group()
-buildings.add(building)
 tourists = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
-all_sprites.add(player)
-all_sprites.add(building)
 
+# create buildings
+for building in building_list:
+    new_building = Building(building_list[building][0], building_list[building][1], building_list[building][2])
+    buildings.add(new_building)
+    all_sprites.add(new_building)
+
+# add player to sprite group after buildings
+all_sprites.add(player)
+    
 # game loop
 running = True
 
