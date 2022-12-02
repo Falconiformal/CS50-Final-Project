@@ -134,7 +134,7 @@ class Tourist(pygame.sprite.Sprite):
 
         self.rect.move_ip(self.speedx, self.speedy) # random motion
 
-        if self.rect.right > SCREEN_WIDTH or self.rect.right < 0 or self.rect.top < 0 or self.rect.top > SCREEN_HEIGHT:
+        if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
 # clock setup (framerate)
@@ -190,7 +190,7 @@ player = Player()
 
 # creates event to add tourist
 ADDTOURIST = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDTOURIST, 125) # adds 8 tourists every second
+pygame.time.set_timer(ADDTOURIST, 200) # adds 5 tourists every second
 
 
 # create sprite groups
