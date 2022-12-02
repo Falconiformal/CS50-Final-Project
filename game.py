@@ -76,7 +76,7 @@ class Building(pygame.sprite.Sprite):
         super(Building, self).__init__()
         self.surf = pygame.Surface((10, 10))
         self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect(center=(600, 400)) # these would need to be the real locations of the buildings
+        self.rect = self.surf.get_rect(center=(625, 200)) # these would need to be the real locations of the buildings
         
 
 # define tourist class
@@ -85,16 +85,31 @@ class Tourist(pygame.sprite.Sprite):
         super(Tourist, self).__init__()
         self.surf = pygame.Surface((20, 10))
         self.surf.fill((255, 255, 255))
+        
+        sides = [
+            (random.randint(1, SCREEN_WIDTH - 1), 1),
+            (random.randint(1, SCREEN_WIDTH - 1), SCREEN_HEIGHT - 1),
+            (1, random.randint(1, SCREEN_HEIGHT - 1)),
+            (SCREEN_WIDTH - 1, random.randint(1, SCREEN_HEIGHT - 1))
+        ]
+
         self.rect = self.surf.get_rect(
             center=(
-                random.randint(SCREEN_WIDTH + 20, SCREEN_WIDTH + 100),
-                random.randint(0, SCREEN_HEIGHT),
-            ) # these would set random locations for the tourists beyond right edge
+                sides[random.randint(0, 3)]
+            ) # these would set random locations for the tourists along edges
         )
-        self.speed = random.randint(5, 20)
+
     def update(self):
-        self.rect.move_ip(-self.speed, 0) # this moves left, could change to make random?
-        if self.rect.right < 0:
+
+        while True:
+            self.speedx = random.randint(-20, 20)
+            self.speedy = random.randint(-20, 20)
+
+            if self.speedx != 0 or self.speedy != 0:
+                break
+        self.rect.move_ip(self.speedx, self.speedy) # random motion
+
+        if self.rect.right > SCREEN_WIDTH or self.rect.right < 0 or self.rect.top < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
 # clock setup (framerate)
@@ -143,8 +158,8 @@ player = Player()
 
 # creates event to add tourist
 ADDTOURIST = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDTOURIST, 1000) # adds a tourist every second
-
+pygame.time.set_timer(ADDTOURIST, 250) # adds 4 tourists every second
+  
 # set building (temporary)
 building = Building()
 
@@ -208,7 +223,6 @@ while running:
     # draw player, buildings, tourists on screen
     for sprite in all_sprites:
         screen.blit(sprite.surf, sprite.rect)
-    # screen.blit(player.surf, player.rect)
 
     # update display
     pygame.display.flip()
