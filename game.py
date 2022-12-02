@@ -96,7 +96,7 @@ class Building(pygame.sprite.Sprite):
 class Tourist(pygame.sprite.Sprite):
     def __init__(self):
         super(Tourist, self).__init__()
-        self.surf = pygame.Surface((20, 10))
+        self.surf = pygame.Surface((15, 30))
         self.surf.fill((255, 255, 255))
 
         self.speedx = random.randint(-5, 5)
@@ -168,7 +168,11 @@ player_frames = [
 building_list = {
     'Grays': ['buildings/grays.png', 1132, 322],
     'Stoughton': ['buildings/stoughton.png', 170, 518],
-    'Hollis': ['buildings/stoughton.png', 386, 518]
+    'Hollis': ['buildings/stoughton.png', 386, 518],
+    'Thayer': ['buildings/thayer.png', 274, 70],
+    'University Hall': ['buildings/universityhall.png', 624, 128],
+    'Mower': ['buildings/mower.png', 168, 732],
+    'Lionel': ['buildings/mower.png', 388, 732]
 }
 
 # set screen
