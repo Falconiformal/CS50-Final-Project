@@ -24,7 +24,6 @@ class Player(pygame.sprite.Sprite):
         self.surf = player_frames[pframe].convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
-        self.hitbox = pygame.Rect(self.rect.left + 35, self.rect.top + 50, 25, 40)
     
     # moves sprite with keypresses
     def update(self, pressed_keys):
@@ -61,7 +60,7 @@ class Player(pygame.sprite.Sprite):
                 pframe = 8
             player.surf = player_frames[pframe].convert()
             player.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        # set screen boundaries
+        # set screen boundaries; player sprite image has extra border space, numbers here adjust for that buffer
         if self.rect.left < -30:
             self.rect.left = -30
         if self.rect.right > SCREEN_WIDTH + 35:
@@ -70,10 +69,19 @@ class Player(pygame.sprite.Sprite):
             self.rect.top = -10
         if self.rect.bottom >= SCREEN_HEIGHT + 10:
             self.rect.bottom = SCREEN_HEIGHT + 10
+        # player hitbox
+        self.hitbox = pygame.Rect(self.rect.left + 35, self.rect.top + 50, 25, 40)
         # building collisions
         for building in buildings:
-            if pygame.Rect.colliderect(player.hitbox, building.rect) and self.hitbox.left < building.rect.right:
-               self.rect.left = building.rect.right - 35
+            if pygame.Rect.colliderect(self.hitbox, building.rect):
+                if self.hitbox.left + 5 >= building.rect.right:
+                    self.rect.left = building.rect.right - 35
+                elif self.hitbox.right - 5 <= building.rect.left:
+                    self.rect.right = building.rect.left + 40
+                elif self.hitbox.top + 5 >= building.rect.bottom:
+                    self.rect.top = building.rect.bottom - 50
+                elif self.hitbox.bottom - 5 <= building.rect.top:
+                    self.rect.bottom = building.rect.top + 10
             
 # define building class
 class Building(pygame.sprite.Sprite):
