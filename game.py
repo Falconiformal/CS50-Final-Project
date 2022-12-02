@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.surf = player_frames[pframe].convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
-        self.hitbox.rect = (self.rect.left + 30, self.rect.top + 50, 35, 40)
+        self.hitbox = pygame.Rect(self.rect.left + 35, self.rect.top + 50, 25, 40)
     
     # moves sprite with keypresses
     def update(self, pressed_keys):
@@ -72,8 +72,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.bottom = SCREEN_HEIGHT + 10
         # building collisions
         for building in buildings:
-            if self.hitbox <= building.rect.right:
-                self.rect.left = building.rect.right - 30
+            if pygame.Rect.colliderect(player.hitbox, building.rect) and self.hitbox.left < building.rect.right:
+               self.rect.left = building.rect.right - 35
             
 # define building class
 class Building(pygame.sprite.Sprite):
