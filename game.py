@@ -98,28 +98,40 @@ class Tourist(pygame.sprite.Sprite):
         super(Tourist, self).__init__()
         self.surf = pygame.Surface((20, 10))
         self.surf.fill((255, 255, 255))
+
+        self.speedx = random.randint(-5, 5)
+        self.speedy = random.randint(-5, 5)
         
         sides = [
-            (random.randint(1, SCREEN_WIDTH - 1), 1),
-            (random.randint(1, SCREEN_WIDTH - 1), SCREEN_HEIGHT - 1),
-            (1, random.randint(1, SCREEN_HEIGHT - 1)),
-            (SCREEN_WIDTH - 1, random.randint(1, SCREEN_HEIGHT - 1))
+            [(random.randint(1, SCREEN_WIDTH - 1), 1), random.randint(-5, 5), random.randint(1, 5)],
+            [(random.randint(1, SCREEN_WIDTH - 1), SCREEN_HEIGHT - 1), random.randint(-5, 5), random.randint(-5, -1)],
+            [(1, random.randint(1, SCREEN_HEIGHT - 1)), random.randint(1, 5), random.randint(-5, 5)],
+            [(SCREEN_WIDTH - 1, random.randint(1, SCREEN_HEIGHT - 1)), random.randint(-5, -1), random.randint(-5, 5)]
         ]
 
+        pickSide = random.randint(0, 3)
         self.rect = self.surf.get_rect(
             center=(
-                sides[random.randint(0, 3)]
+                sides[pickSide][0]
             ) # these would set random locations for the tourists along edges
         )
 
+        self.speedx = sides[pickSide][1]
+        self.speedy = sides[pickSide][2]
+
+
     def update(self):
 
-        while True:
-            self.speedx = random.randint(-20, 20)
-            self.speedy = random.randint(-20, 20)
+        # pygame.time.Clock.get_time(clock) % 1000 == 0:
 
-            if self.speedx != 0 or self.speedy != 0:
-                break
+        if random.randint(0, 10) == 5:
+            while True:
+                self.speedx = random.randint(-5, 5)
+                self.speedy = random.randint(-5, 5)
+
+                if self.speedx != 0 or self.speedy != 0:
+                    break
+
         self.rect.move_ip(self.speedx, self.speedy) # random motion
 
         if self.rect.right > SCREEN_WIDTH or self.rect.right < 0 or self.rect.top < 0 or self.rect.top > SCREEN_HEIGHT:
@@ -178,7 +190,7 @@ player = Player()
 
 # creates event to add tourist
 ADDTOURIST = pygame.USEREVENT + 1
-pygame.time.set_timer(ADDTOURIST, 250) # adds 4 tourists every second
+pygame.time.set_timer(ADDTOURIST, 125) # adds 8 tourists every second
 
 
 # create sprite groups
