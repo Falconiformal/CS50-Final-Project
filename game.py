@@ -89,15 +89,23 @@ class Building(pygame.sprite.Sprite):
         super(Building, self).__init__()
         self.surf = pygame.image.load(name).convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.surf.get_rect(center=(x, y)) # these would need to be the real locations of the buildings
+        self.rect = self.surf.get_rect(center=(x, y)) # the locations of the buildings
         
 
 # define tourist class
 class Tourist(pygame.sprite.Sprite):
     def __init__(self):
         super(Tourist, self).__init__()
-        self.surf = pygame.Surface((15, 30))
-        self.surf.fill((255, 255, 255))
+        # tourist frames
+        tourist_frames = [
+        pygame.image.load('tourists/tourist0.png'),
+        pygame.image.load('tourists/tourist1.png'),
+        pygame.image.load('tourists/tourist2.png')
+        ]
+        
+        pickframe = random.randint(0, 2)
+        self.surf = tourist_frames[pickframe]
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
 
         self.speedx = random.randint(-5, 5)
         self.speedy = random.randint(-5, 5)
@@ -121,9 +129,6 @@ class Tourist(pygame.sprite.Sprite):
 
 
     def update(self):
-
-        # pygame.time.Clock.get_time(clock) % 1000 == 0:
-
         if random.randint(0, 10) == 5:
             while True:
                 self.speedx = random.randint(-5, 5)
