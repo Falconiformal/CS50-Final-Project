@@ -139,6 +139,9 @@ class Tourist(pygame.sprite.Sprite):
 
         self.rect.move_ip(self.speedx, self.speedy) # random motion
 
+        if pygame.sprite.spritecollideany(self, buildings):
+            self.rect.move_ip(-self.speedx, -self.speedy) # reverse direction
+
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
