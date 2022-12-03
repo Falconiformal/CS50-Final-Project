@@ -181,7 +181,8 @@ building_list = {
     'University Hall': ['buildings/universityhall.png', 624, 128],
     'Mower': ['buildings/mower.png', 168, 732],
     'Lionel': ['buildings/mower.png', 388, 732],
-    'Holoworthy': ['buildings/holoworthy.png', 54, 328]
+    'Holoworthy': ['buildings/holoworthy.png', 54, 328],
+    'Weld': ['buildings/weld.png', 922, 78]
 }
 
 # set screen
