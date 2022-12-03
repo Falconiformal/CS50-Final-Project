@@ -61,27 +61,27 @@ class Player(pygame.sprite.Sprite):
             player.surf = player_frames[pframe].convert()
             player.surf.set_colorkey((255, 255, 255), RLEACCEL)
         # set screen boundaries; player sprite image has extra border space, numbers here adjust for that buffer
-        if self.rect.left < -30:
-            self.rect.left = -30
-        if self.rect.right > SCREEN_WIDTH + 35:
-            self.rect.right = SCREEN_WIDTH + 35
-        if self.rect.top <= -10:
-            self.rect.top = -10
-        if self.rect.bottom >= SCREEN_HEIGHT + 10:
-            self.rect.bottom = SCREEN_HEIGHT + 10
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
+        if self.rect.top <= 0:
+            self.rect.top = 0
+        if self.rect.bottom >= SCREEN_HEIGHT:
+            self.rect.bottom = SCREEN_HEIGHT
         # player hitbox
-        self.hitbox = pygame.Rect(self.rect.left + 35, self.rect.top + 50, 25, 40)
+        self.hitbox = pygame.Rect(self.rect.left + 10, self.rect.top + 40, 16, 40)
         # building collisions
         for building in buildings:
             if pygame.Rect.colliderect(self.hitbox, building.rect):
                 if self.hitbox.left + 5 >= building.rect.right:
-                    self.rect.left = building.rect.right - 35
+                    self.rect.left = building.rect.right - 10
                 elif self.hitbox.right - 5 <= building.rect.left:
-                    self.rect.right = building.rect.left + 40
+                    self.rect.right = building.rect.left + 10
                 elif self.hitbox.top + 5 >= building.rect.bottom:
-                    self.rect.top = building.rect.bottom - 50
+                    self.rect.top = building.rect.bottom - 40
                 elif self.hitbox.bottom - 5 <= building.rect.top:
-                    self.rect.bottom = building.rect.top + 10
+                    self.rect.bottom = building.rect.top
             
 # define building class
 class Building(pygame.sprite.Sprite):
