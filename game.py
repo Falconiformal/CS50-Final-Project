@@ -181,9 +181,15 @@ building_list = {
     'University Hall': ['buildings/universityhall.png', 624, 128],
     'Mower': ['buildings/mower.png', 168, 732],
     'Lionel': ['buildings/mower.png', 388, 732],
-    'Holoworthy': ['buildings/holoworthy.png', 54, 328],
+    'Holworthy': ['buildings/holworthy.png', 54, 328],
     'Weld': ['buildings/weld.png', 922, 78],
-    'Phillips Brooks House': ['buildings/phillipsbrooks.png', 46, 626]
+    'Phillips Brooks House': ['buildings/phillipsbrooks.png', 46, 626],
+    'Holden Chapel': ['buildings/holdenchapel.png', 278, 658],
+    'Harvard Hall': ['buildings/harvardhall.png', 520, 632],
+    'Massachusetts Hall': ['buildings/masshall.png', 748, 616],
+    'Johnston Gate House': ['buildings/gatehouse.png', 614, 702],
+    'Matthews': ['buildings/matthews.png', 942, 512],
+    'Straus': ['buildings/straus.png', 948, 702]
 }
 
 # set screen
