@@ -130,12 +130,12 @@ building_list = [
     ['Weld', 'buildings/weld.png', (922,78), (0,0)],
     ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (0,0)],
     ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (0,0)],
-    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (0,0)],
-    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (0,0)],
-    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (0,0)],
-    ['Matthews', 'buildings/matthews.png', (942,512), (0,0)],
-    ['Straus', 'buildings/straus.png', (948,702), (0,0)],
-    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (0,0)]
+    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (576,632)],
+    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (698,574)],
+    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
+    ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
+    ['Straus', 'buildings/straus.png', (948,702), (948,662)],
+    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,208)]
 ]
 
 
@@ -224,6 +224,10 @@ class Building_checkpoint(pygame.sprite.Sprite):
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(xy)) # the locations of the checkpoints
         self.name = name
+
+    def update(self):
+        # if collide with player...
+        pass
         
 
 # define tourist class
@@ -288,7 +292,7 @@ def main():
     # set screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    game_state = GameState.TITLE
+    game_state = GameState.NEWGAME
 
     while True:
         if game_state == GameState.TITLE:
@@ -408,6 +412,9 @@ def play_level(screen):
 
         # update player sprite
         player.update(pressed_keys, buildings)
+
+        # update checkpoints to display info
+        checkpoints.update()
 
         # update tourist
         tourists.update(buildings)
