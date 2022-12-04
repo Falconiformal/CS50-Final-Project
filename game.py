@@ -119,43 +119,23 @@ player_frames = [
 
 # building skins and locations
 building_list = [
-<<<<<<< HEAD
-    ['Grays', 'buildings/grays.png', (1132,322), (1100,340),],
-    ['Stoughton', 'buildings/stoughton.png', (170,518), (0,0)],
-    ['Hollis', 'buildings/stoughton.png', (386,518), (0,0)],
-    ['Thayer', 'buildings/thayer.png', (274,70), (0,0)],
-    ['University Hall', 'buildings/universityhall.png', (624,128), (0,0)],
-    ['Mower', 'buildings/mower.png', (168,732), (0,0)],
-    ['Lionel', 'buildings/mower.png', (388,732), (0,0)],
-    ['Holworthy', 'buildings/holworthy.png', (54,328), (0,0)],
-    ['Weld', 'buildings/weld.png', (922,78), (0,0)],
-    ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (0,0)],
-    ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (0,0)],
-    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (576,632)],
-    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (698,574)],
-    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
-    ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
-    ['Straus', 'buildings/straus.png', (948,702), (948,662)],
-    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,208)]
-=======
     ['Grays', 'buildings/grays.png', (1132,322), (1075,322)],
     ['Stoughton', 'buildings/stoughton.png', (170,518), (170,465)],
     ['Hollis', 'buildings/stoughton.png', (386,518), (386,465)],
-    ['Thayer', 'buildings/thayer.png', (274,70), (272,125)],
-    ['University Hall', 'buildings/universityhall.png', (624,128), (681,185)],
+    ['Thayer', 'buildings/thayer.png', (274,70), (272,135)],
+    ['University Hall', 'buildings/universityhall.png', (624,128), (681,195)],
     ['Mower', 'buildings/mower.png', (168,732), (168,687)],
     ['Lionel', 'buildings/mower.png', (388,732), (388,687)],
     ['Holworthy', 'buildings/holworthy.png', (54,328), (100,328)],
     ['Weld', 'buildings/weld.png', (922,78), (922,155)],
     ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (100,626)],
     ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (278,605)],
-    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (0,0)],
-    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (0,0)],
-    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (0,0)],
-    ['Matthews', 'buildings/matthews.png', (942,512), (0,0)],
-    ['Straus', 'buildings/straus.png', (948,702), (0,0)],
-    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (0,0)]
->>>>>>> 33152598f98860adbc394ebf95cce8d1a19401c5
+    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (576,632)],
+    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (698,574)],
+    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
+    ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
+    ['Straus', 'buildings/straus.png', (948,702), (948,662)],
+    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,208)]
 ]
 
 
@@ -246,7 +226,7 @@ class Building_checkpoint(pygame.sprite.Sprite):
         self.name = name
 
     def update(self):
-        # if collide with player...
+        # if collide
         pass
         
 
@@ -312,7 +292,7 @@ def main():
     # set screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    game_state = GameState.NEWGAME
+    game_state = GameState.TITLE
 
     while True:
         if game_state == GameState.TITLE:
