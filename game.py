@@ -118,25 +118,25 @@ player_frames = [
 
 
 # building skins and locations
-building_list = {
-    'Grays': ['buildings/grays.png', 1132, 322],
-    'Stoughton': ['buildings/stoughton.png', 170, 518],
-    'Hollis': ['buildings/stoughton.png', 386, 518],
-    'Thayer': ['buildings/thayer.png', 274, 70],
-    'University Hall': ['buildings/universityhall.png', 624, 128],
-    'Mower': ['buildings/mower.png', 168, 732],
-    'Lionel': ['buildings/mower.png', 388, 732],
-    'Holworthy': ['buildings/holworthy.png', 54, 328],
-    'Weld': ['buildings/weld.png', 922, 78],
-    'Phillips Brooks House': ['buildings/phillipsbrooks.png', 46, 626],
-    'Holden Chapel': ['buildings/holdenchapel.png', 278, 658],
-    'Harvard Hall': ['buildings/harvardhall.png', 520, 632],
-    'Massachusetts Hall': ['buildings/masshall.png', 748, 616],
-    'Johnston Gate House': ['buildings/gatehouse.png', 614, 702],
-    'Matthews': ['buildings/matthews.png', 942, 512],
-    'Straus': ['buildings/straus.png', 948, 702],
-    'John Harvard Statue': ['buildings/johnharvard.png', 624, 175]
-}
+building_list = [
+    ['Grays', 'buildings/grays.png', (1132,322), (1100,340),],
+    ['Stoughton', 'buildings/stoughton.png', (170,518), (0,0)],
+    ['Hollis', 'buildings/stoughton.png', (386,518), (0,0)],
+    ['Thayer', 'buildings/thayer.png', (274,70), (0,0)],
+    ['University Hall', 'buildings/universityhall.png', (624,128), (0,0)],
+    ['Mower', 'buildings/mower.png', (168,732), (0,0)],
+    ['Lionel', 'buildings/mower.png', (388,732), (0,0)],
+    ['Holworthy', 'buildings/holworthy.png', (54,328), (0,0)],
+    ['Weld', 'buildings/weld.png', (922,78), (0,0)],
+    ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (0,0)],
+    ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (0,0)],
+    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (0,0)],
+    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (0,0)],
+    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (0,0)],
+    ['Matthews', 'buildings/matthews.png', (942,512), (0,0)],
+    ['Straus', 'buildings/straus.png', (948,702), (0,0)],
+    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (0,0)]
+]
 
 
 # define player sprite
@@ -193,7 +193,7 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= SCREEN_HEIGHT:
             self.rect.bottom = SCREEN_HEIGHT
         # player hitbox
-        self.hitbox = Rect(self.rect.left + 10, self.rect.top + 40, 16, 40)
+        self.hitbox = Rect(self.rect.left + 10, self.rect.top + 50, 16, 30)
         # building collisions
         for building in buildings:
             if Rect.colliderect(self.hitbox, building.rect):
@@ -202,18 +202,28 @@ class Player(pygame.sprite.Sprite):
                 elif self.hitbox.right - 5 <= building.rect.left:
                     self.rect.right = building.rect.left + 10
                 elif self.hitbox.top + 5 >= building.rect.bottom:
-                    self.rect.top = building.rect.bottom - 40
+                    self.rect.top = building.rect.bottom - 50
                 elif self.hitbox.bottom - 5 <= building.rect.top:
                     self.rect.bottom = building.rect.top
         
                     
 # define building class
 class Building(pygame.sprite.Sprite):
-    def __init__(self, name, x, y):
+    def __init__(self, file, xy):
         super(Building, self).__init__()
-        self.surf = pygame.image.load(name).convert()
+        self.surf = pygame.image.load(file).convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.surf.get_rect(center=(x, y)) # the locations of the buildings
+        self.rect = self.surf.get_rect(center=(xy)) # the locations of the buildings
+
+        
+# define building checkpoint class
+class Building_checkpoint(pygame.sprite.Sprite):
+    def __init__(self, name, xy):
+        super(Building_checkpoint, self).__init__()
+        self.surf = pygame.image.load('buildings/checkpoint.png').convert()
+        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.rect = self.surf.get_rect(center=(xy)) # the locations of the checkpoints
+        self.name = name
         
 
 # define tourist class
@@ -360,14 +370,18 @@ def play_level(screen):
 
     # create sprite groups
     buildings = pygame.sprite.Group()
+    checkpoints = pygame.sprite.Group()
     tourists = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
 
-    # create buildings
+    # create buildings and checkpoints
     for building in building_list:
-        new_building = Building(building_list[building][0], building_list[building][1], building_list[building][2])
+        new_building = Building(building[1], building[2])
+        new_checkpoint = Building_checkpoint(building[0], building[3])
         buildings.add(new_building)
         all_sprites.add(new_building)
+        checkpoints.add(new_checkpoint)
+        all_sprites.add(new_checkpoint)
     
     # add player to sprite group after buildings
     all_sprites.add(player)
