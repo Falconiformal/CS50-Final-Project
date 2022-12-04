@@ -135,7 +135,7 @@ building_list = [
     ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
     ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
     ['Straus', 'buildings/straus.png', (948,702), (948,662)],
-    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,208)]
+    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
 ]
 
 
@@ -224,11 +224,28 @@ class Building_checkpoint(pygame.sprite.Sprite):
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(xy)) # the locations of the checkpoints
         self.name = name
+        self.xy = xy
 
-    def update(self):
-        # if collide
-        pass
+    def update(self, player, all_sprites):
+        self.display = False
+        info = Info(self.name, self.xy)
+        if Rect.colliderect(self.rect, player.rect):
+            self.display = True
         
+        if self.display == True:
+            # display text
+            all_sprites.add(info)
+            print('hi')
+        if self.display == False:
+            info.kill()
+            
+        
+class Info(pygame.sprite.Sprite):
+    def __init__(self, name, xy):
+        super(Info, self).__init__()
+        self.surf = create_surface_with_text(name, 10, (0,0,0), (255,255,255))
+        self.rect = self.surf.get_rect(center=xy)
+
 
 # define tourist class
 class Tourist(pygame.sprite.Sprite):
@@ -414,7 +431,7 @@ def play_level(screen):
         player.update(pressed_keys, buildings)
 
         # update checkpoints to display info
-        checkpoints.update()
+        checkpoints.update(player, all_sprites)
 
         # update tourist
         tourists.update(buildings)
