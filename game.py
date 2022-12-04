@@ -134,7 +134,8 @@ building_list = {
     'Massachusetts Hall': ['buildings/masshall.png', 748, 616],
     'Johnston Gate House': ['buildings/gatehouse.png', 614, 702],
     'Matthews': ['buildings/matthews.png', 942, 512],
-    'Straus': ['buildings/straus.png', 948, 702]
+    'Straus': ['buildings/straus.png', 948, 702],
+    'John Harvard Statue': ['buildings/johnharvard.png', 624, 175]
 }
 
 
