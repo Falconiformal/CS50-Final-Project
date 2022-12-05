@@ -82,6 +82,14 @@ building_list = [
     ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
 ]
 
+# target locations
+locations = [
+    'Harvard Yard Operations (Yard Ops)',
+    'Phillips Brooks House',
+    'Harvard Foundation for Intercultural and Race Relations',
+    'Office of BGLTQ Student Life (QuOffice)'
+]
+
 # checkpoint info list
 infoqueue = []
 
@@ -239,10 +247,12 @@ class Player(pygame.sprite.Sprite):
                 elif self.rect.bottom - 5 <= tourist.rect.top:
                     self.rect.bottom = tourist.rect.top
                 self.tracker += 1
+            elif self.tracker != 0:
+                self.tracker = 0
         
-        if self.tracker == 1:
-            score = score - 20
-            print(score)
+            if self.tracker == 1:
+                score = score - 20
+                print(score)
         
                     
 # define building class
@@ -335,10 +345,11 @@ class Tourist(pygame.sprite.Sprite):
         if pygame.sprite.collide_rect(self, player):
             self.rect.move_ip(-self.speedx, -self.speedy) # reverse direction
             self.tracker += 1
+        elif self.tracker != 0:
+            self.tracker = 0
         
         if self.tracker == 1:
             score = score - 20
-            print(score)
 
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
@@ -612,9 +623,19 @@ def play_level(screen):
         for sprite in all_sprites:
             screen.blit(sprite.surf, sprite.rect)
 
+        # draw info labels
         for info in infoqueue:
             pygame.draw.rect(screen, CRIMSON, info[2], border_radius = 4)
             screen.blit(info[0], info[1])
+        
+        # display score
+        global score
+        scoretext = 'Score: ' + str(score)
+        scoredisplay = create_surface_with_text(scoretext, 18, WHITE, CRIMSON)
+        score_rect = scoredisplay.get_rect(center=(1100,20))
+        border = create_border_surface(score_rect, 6)
+        pygame.draw.rect(screen, CRIMSON, border, border_radius = 6)
+        screen.blit(scoredisplay, score_rect)
 
         # update display
         pygame.display.flip()
@@ -623,5 +644,7 @@ def play_level(screen):
         clock.tick(30)
         global time
         time += 1
+        if time % 6 == 0:
+            score -= 1
 
 main()
