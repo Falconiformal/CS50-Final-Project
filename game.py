@@ -26,6 +26,11 @@ class GameState(Enum):
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 
+# color library
+WHITE = (255, 255, 255)
+CRIMSON = (99, 0, 0)
+BLACK = (0, 0, 0)
+
 # clock setup (framerate)
 clock = pygame.time.Clock()
 
@@ -116,7 +121,6 @@ player_frames = [
     pygame.image.load('pixilart-frames/pixil-frame-15.png')
 ]
 
-
 # building skins and locations
 building_list = [
     ['Grays', 'buildings/grays.png', (1132,322), (1075,322)],
@@ -138,13 +142,16 @@ building_list = [
     ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
 ]
 
+# checkpoint info list
+infoqueue = []
+
 
 # define player sprite
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
         self.surf = player_frames[pframe].convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey(WHITE, RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
 
         
@@ -158,7 +165,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 pframe = 4
             self.surf = player_frames[pframe].convert()
-            self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf.set_colorkey(WHITE, RLEACCEL)
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 5)
             if pframe in [0, 1, 2]:
@@ -166,7 +173,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 pframe = 0
             self.surf = player_frames[pframe].convert()
-            self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf.set_colorkey(WHITE, RLEACCEL)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(5, 0)
             if pframe in [12, 13, 14]:
@@ -174,7 +181,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 pframe = 12
             self.surf = player_frames[pframe].convert()
-            self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf.set_colorkey(WHITE, RLEACCEL)
         if pressed_keys[K_LEFT]:
             self.rect.move_ip(-5, 0)
             if pframe in [8, 9, 10]:
@@ -182,7 +189,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 pframe = 8
             self.surf = player_frames[pframe].convert()
-            self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+            self.surf.set_colorkey(WHITE, RLEACCEL)
         # set screen boundaries; player sprite image has extra border space, numbers here adjust for that buffer
         if self.rect.left < 0:
             self.rect.left = 0
@@ -199,11 +206,11 @@ class Player(pygame.sprite.Sprite):
             if Rect.colliderect(self.hitbox, building.rect):
                 if self.hitbox.left + 5 >= building.rect.right:
                     self.rect.left = building.rect.right - 10
-                elif self.hitbox.right - 5 <= building.rect.left:
+                if self.hitbox.right - 5 <= building.rect.left:
                     self.rect.right = building.rect.left + 10
-                elif self.hitbox.top + 5 >= building.rect.bottom:
+                if self.hitbox.top + 5 >= building.rect.bottom:
                     self.rect.top = building.rect.bottom - 50
-                elif self.hitbox.bottom - 5 <= building.rect.top:
+                if self.hitbox.bottom - 5 <= building.rect.top:
                     self.rect.bottom = building.rect.top
         
                     
@@ -212,7 +219,7 @@ class Building(pygame.sprite.Sprite):
     def __init__(self, file, xy):
         super(Building, self).__init__()
         self.surf = pygame.image.load(file).convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey(WHITE, RLEACCEL)
         self.rect = self.surf.get_rect(center=(xy)) # the locations of the buildings
 
         
@@ -221,30 +228,24 @@ class Building_checkpoint(pygame.sprite.Sprite):
     def __init__(self, name, xy):
         super(Building_checkpoint, self).__init__()
         self.surf = pygame.image.load('buildings/checkpoint.png').convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey(WHITE, RLEACCEL)
         self.rect = self.surf.get_rect(center=(xy)) # the locations of the checkpoints
-        self.name = name
-        self.xy = xy
+        self.info = create_surface_with_text(name, 12, WHITE, CRIMSON)
+        self.info_rect = self.info.get_rect(center=xy)
+        self.tracker = 0
+        self.border = Rect(self.info_rect.left - 4, self.info_rect.top - 4, (self.info_rect.width + 8), (self.info_rect.height + 8))
 
-    def update(self, player, all_sprites):
-        self.display = False
-        info = Info(self.name, self.xy)
-        if Rect.colliderect(self.rect, player.rect):
-            self.display = True
-        
-        if self.display == True:
-            # display text
-            all_sprites.add(info)
-            print('hi')
-        if self.display == False:
-            info.kill()
-            
-        
-class Info(pygame.sprite.Sprite):
-    def __init__(self, name, xy):
-        super(Info, self).__init__()
-        self.surf = create_surface_with_text(name, 10, (0,0,0), (255,255,255))
-        self.rect = self.surf.get_rect(center=xy)
+    def update(self, player, infoqueue):
+        if Rect.colliderect(self.rect, player.hitbox):
+            self.tracker += 1
+        elif self.tracker != 0:
+            # leaves checkpoint
+            self.tracker = 0
+            infoqueue.remove([self.info, self.info_rect, self.border])
+      
+        if self.tracker == 1:
+            # contacts checkpoint (runs once)
+            infoqueue.append([self.info, self.info_rect, self.border])
 
 
 # define tourist class
@@ -260,7 +261,7 @@ class Tourist(pygame.sprite.Sprite):
         
         pickframe = random.randint(0, 2)
         self.surf = tourist_frames[pickframe]
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
+        self.surf.set_colorkey(WHITE, RLEACCEL)
 
         self.speedx = random.randint(-5, 5)
         self.speedy = random.randint(-5, 5)
@@ -327,16 +328,16 @@ def title_screen(screen):
     start_btn = UIElement(
         center_position=(600, 400),
         font_size=30,
-        bg_rgb=(0, 0, 0),
-        text_rgb=(255, 255, 255),
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
         text="Start",
         action=GameState.NEWGAME,
     )
     quit_btn = UIElement(
         center_position=(600, 500),
         font_size=30,
-        bg_rgb=(0, 0, 0),
-        text_rgb=(255, 255, 255),
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
         text="Quit",
         action=GameState.QUIT
     )
@@ -351,7 +352,7 @@ def title_screen(screen):
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
             
-            screen.fill((0, 0, 0))
+            screen.fill(CRIMSON)
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -403,9 +404,6 @@ def play_level(screen):
         all_sprites.add(new_building)
         checkpoints.add(new_checkpoint)
         all_sprites.add(new_checkpoint)
-    
-    # add player to sprite group after buildings
-    all_sprites.add(player)
 
     # game loop
     while True:
@@ -424,6 +422,9 @@ def play_level(screen):
                 tourists.add(new_tourist)
                 all_sprites.add(new_tourist)
 
+        # add player to sprite group
+        all_sprites.add(player)
+        
         # record keys pressed
         pressed_keys = pygame.key.get_pressed()
 
@@ -431,13 +432,13 @@ def play_level(screen):
         player.update(pressed_keys, buildings)
 
         # update checkpoints to display info
-        checkpoints.update(player, all_sprites)
+        checkpoints.update(player, infoqueue)
 
         # update tourist
         tourists.update(buildings)
 
         # background
-        screen.fill((0, 0, 0))
+        screen.fill(BLACK)
         
         # iterates through screen width and screen height to set down green grass tiles
         i = 0
@@ -451,14 +452,18 @@ def play_level(screen):
 
         # lays down six path tiles
         for k in range(3):
-            pathmap[k].set_colorkey((255, 255, 255), RLEACCEL)
-            pathmap[k + 3].set_colorkey((255, 255, 255), RLEACCEL)
+            pathmap[k].set_colorkey(WHITE, RLEACCEL)
+            pathmap[k + 3].set_colorkey(WHITE, RLEACCEL)
             screen.blit(pathmap[k], (k * pathmap[k].get_width(), 0))
             screen.blit(pathmap[k + 3], (k * pathmap[k].get_width(), pathmap[k].get_height()))
 
         # draw player, buildings, tourists on screen
         for sprite in all_sprites:
             screen.blit(sprite.surf, sprite.rect)
+
+        for info in infoqueue:
+            pygame.draw.rect(screen, CRIMSON, info[2], border_radius = 4)
+            screen.blit(info[0], info[1])
 
         # update display
         pygame.display.flip()
