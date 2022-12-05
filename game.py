@@ -112,7 +112,7 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
 class UIElement(pygame.sprite.Sprite):
     """ An user interface element that can be added to a surface """
 
-    def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, action=None):
+    def __init__(self, center_position, text, font_size, bg_rgb, text_rgb, padding, border_radius, action=None):
         """
         Args:
             center_position - tuple (x, y)
@@ -141,6 +141,9 @@ class UIElement(pygame.sprite.Sprite):
         ]
 
         self.action = action
+        self.padding = padding
+        self.bg_rgb = bg_rgb
+        self.border_radius = border_radius
 
         # calls the init method of the parent sprite class
         super().__init__()
@@ -165,6 +168,8 @@ class UIElement(pygame.sprite.Sprite):
 
     def draw(self, surface):
         """ Draws element onto a surface """
+        border = create_border_surface(self.rect, self.padding)
+        pygame.draw.rect(surface, self.bg_rgb, border, border_radius=self.border_radius)
         surface.blit(self.image, self.rect)
 
 
@@ -398,6 +403,8 @@ def title_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Play",
+        padding = 16,
+        border_radius = 4,
         action=GameState.NEWGAME,
     )
     credits_btn = UIElement(
@@ -406,6 +413,8 @@ def title_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Credits",
+        padding = 20,
+        border_radius = 4,
         action=GameState.CREDITS
     )
     quit_btn = UIElement(
@@ -414,10 +423,13 @@ def title_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Quit",
+        padding = 16,
+        border_radius = 4,
         action=GameState.QUIT
     )
 
     buttons = [play_btn, credits_btn, quit_btn]
+    bg = pygame.image.load('homebg.png').convert()
 
     # main loop
     while True:
@@ -428,6 +440,7 @@ def title_screen(screen):
                 mouse_up = True
             
             screen.fill(CRIMSON)
+            screen.blit(bg, (0,0))
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -453,6 +466,8 @@ def credits_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Home",
+        padding = 16,
+        border_radius = 4,
         action=GameState.TITLE,
     )
 
@@ -494,6 +509,8 @@ def end_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Play again",
+        padding = 16,
+        border_radius = 4,
         action=GameState.NEWGAME,
     )
     home_btn = UIElement(
@@ -502,6 +519,8 @@ def end_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Home",
+        padding = 16,
+        border_radius = 4,
         action=GameState.TITLE,
     )
     quit_btn = UIElement(
@@ -510,6 +529,8 @@ def end_screen(screen):
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Quit",
+        padding = 8,
+        border_radius = 4,
         action=GameState.QUIT
     )
 
