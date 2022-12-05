@@ -32,6 +32,7 @@ SCREEN_HEIGHT = 800
 WHITE = (255, 255, 255)
 CRIMSON = (99, 0, 0)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -82,8 +83,9 @@ building_list = [
     ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
 ]
 
-# checkpoint info list
+# checkpoint info list, point subtraction visual list
 infoqueue = []
+subtraction = []
 
 
 def create_border_surface(text_rect, padding):
@@ -96,7 +98,7 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     """ Returns surface with text written on """
     font = pygame.freetype.SysFont("Courier", font_size, bold=True)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
-    return surface.convert_alpha()
+    return surface.convert()
 
 
 class UIElement(pygame.sprite.Sprite):
@@ -165,7 +167,18 @@ class Player(pygame.sprite.Sprite):
         self.surf = player_frames[pframe].convert()
         self.surf.set_colorkey(WHITE, RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
-        self.tracker = 0
+        #self.tracker = 0
+
+    def show_point_deduction(self, points, state):
+        ''' Visuals for point deduction '''
+        self.bye_points = create_surface_with_text(points, 13, RED, WHITE)
+        self.bye_points.set_colorkey(WHITE, RLEACCEL)
+        self.bye_rect = self.bye_points.get_rect(center=(self.rect.centerx, self.rect.centery - 50))
+
+        if state == 1:
+            subtraction.append([self.bye_points, self.bye_rect])
+        elif state == 0:
+            subtraction.clear()
 
         
     # moves sprite with keypresses
@@ -238,12 +251,7 @@ class Player(pygame.sprite.Sprite):
                     self.rect.top = tourist.rect.bottom
                 elif self.rect.bottom - 5 <= tourist.rect.top:
                     self.rect.bottom = tourist.rect.top
-                self.tracker += 1
-        
-        if self.tracker == 1:
-            score = score - 20
-            print(score)
-        
+
                     
 # define building class
 class Building(pygame.sprite.Sprite):
@@ -272,7 +280,7 @@ class Building_checkpoint(pygame.sprite.Sprite):
         elif self.tracker != 0:
             # leaves checkpoint
             self.tracker = 0
-            infoqueue.remove([self.info, self.info_rect, self.border])
+            infoqueue.clear()
       
         if self.tracker == 1:
             # checkpoint first contact
@@ -335,10 +343,13 @@ class Tourist(pygame.sprite.Sprite):
         if pygame.sprite.collide_rect(self, player):
             self.rect.move_ip(-self.speedx, -self.speedy) # reverse direction
             self.tracker += 1
+        elif self.tracker != 0:
+            self.tracker = 0
+            player.show_point_deduction('-20', self.tracker)
         
         if self.tracker == 1:
             score = score - 20
-            print(score)
+            player.show_point_deduction('-20', self.tracker)
 
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
@@ -371,7 +382,7 @@ def main():
             pygame.quit()
             return
 
-        
+
 def title_screen(screen):
     play_btn = UIElement(
         center_position=(600, 300),
@@ -438,6 +449,8 @@ def credits_screen(screen):
     )
 
     buttons = [home_btn]
+    #credits_a = create_surface_with_text('A game by Elisabeth Ngo and Adam Wang')
+    #credits_b = create_surface_with_text('Created December, 2022 for Harvard CS50')
 
     # main loop
     while True:
@@ -448,8 +461,6 @@ def credits_screen(screen):
                 mouse_up = True
             
             screen.fill(CRIMSON)
-            credits_a = create_surface_with_text('A game by Elisabeth Ngo and Adam Wang')
-            credits_b = create_surface_with_text('Created December, 2022 for Harvard CS50')
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -616,12 +627,19 @@ def play_level(screen):
             pygame.draw.rect(screen, CRIMSON, info[2], border_radius = 4)
             screen.blit(info[0], info[1])
 
+        for points in subtraction:
+            screen.blit(points[0], points[1])
+
         # update display
         pygame.display.flip()
 
         # set framerate
         clock.tick(30)
         global time
+        global score
         time += 1
+        if time % 6 == 0:
+            score -= 1
+            print(score)
 
 main()
