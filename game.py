@@ -29,6 +29,9 @@ SCREEN_HEIGHT = 800
 # clock setup (framerate)
 clock = pygame.time.Clock()
 
+# score
+score = 300
+
 # following UI text code from tutorial (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     """ Returns surface with text written on """
@@ -146,10 +149,12 @@ class Player(pygame.sprite.Sprite):
         self.surf = player_frames[pframe].convert()
         self.surf.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
+        self.tracker = 0
 
         
     # moves sprite with keypresses
-    def update(self, pressed_keys, buildings):
+    def update(self, pressed_keys, buildings, tourists):
+        global score
         global pframe
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
@@ -206,6 +211,23 @@ class Player(pygame.sprite.Sprite):
                 elif self.hitbox.bottom - 5 <= building.rect.top:
                     self.rect.bottom = building.rect.top
         
+        # tourist collisions
+        for tourist in tourists:
+            if Rect.colliderect(self.rect, tourist.rect):
+                if self.rect.left + 5 >= tourist.rect.right:
+                    self.rect.left = tourist.rect.right
+                elif self.rect.right - 5 <= tourist.rect.left:
+                    self.rect.right = tourist.rect.left
+                elif self.rect.top + 5 >= tourist.rect.bottom:
+                    self.rect.top = tourist.rect.bottom
+                elif self.rect.bottom - 5 <= tourist.rect.top:
+                    self.rect.bottom = tourist.rect.top
+                self.tracker += 1
+        
+        if self.tracker == 1:
+            score = score - 20
+            print(score)
+        
                     
 # define building class
 class Building(pygame.sprite.Sprite):
@@ -235,7 +257,6 @@ class Building_checkpoint(pygame.sprite.Sprite):
         if self.display == True:
             # display text
             all_sprites.add(info)
-            print('hi')
         if self.display == False:
             info.kill()
             
@@ -282,8 +303,11 @@ class Tourist(pygame.sprite.Sprite):
         self.speedx = sides[pickSide][1]
         self.speedy = sides[pickSide][2]
 
+        self.tracker = 0
 
-    def update(self, buildings):
+
+    def update(self, buildings, player):
+        global score
         if random.randint(0, 10) == 5:
             while True:
                 self.speedx = random.randint(-5, 5)
@@ -296,6 +320,14 @@ class Tourist(pygame.sprite.Sprite):
 
         if pygame.sprite.spritecollideany(self, buildings):
             self.rect.move_ip(-self.speedx, -self.speedy) # reverse direction
+
+        if pygame.sprite.collide_rect(self, player):
+            self.rect.move_ip(-self.speedx, -self.speedy) # reverse direction
+            self.tracker += 1
+        
+        if self.tracker == 1:
+            score = score - 20
+            print(score)
 
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
@@ -428,13 +460,13 @@ def play_level(screen):
         pressed_keys = pygame.key.get_pressed()
 
         # update player sprite
-        player.update(pressed_keys, buildings)
+        player.update(pressed_keys, buildings, tourists)
 
         # update checkpoints to display info
         checkpoints.update(player, all_sprites)
 
         # update tourist
-        tourists.update(buildings)
+        tourists.update(buildings, player)
 
         # background
         screen.fill((0, 0, 0))
