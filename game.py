@@ -18,8 +18,10 @@ from pygame.locals import (
 )
 
 class GameState(Enum):
-    QUIT = -1
-    TITLE = 0
+    GAMEOVER = -3
+    CREDITS = -2
+    TITLE = -1
+    QUIT = 0
     NEWGAME = 1
 
 # window dimensions
@@ -33,6 +35,57 @@ BLACK = (0, 0, 0)
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
+time = 0
+
+# player animation frames
+pframe = 4
+player_frames = [
+    pygame.image.load('pixilart-frames/pixil-frame-0.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-1.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-2.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-3.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-4.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-5.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-6.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-7.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-8.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-9.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-10.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-11.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-12.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-13.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-14.png'),
+    pygame.image.load('pixilart-frames/pixil-frame-15.png')
+]
+
+# building skins and locations
+building_list = [
+    ['Grays', 'buildings/grays.png', (1132,322), (1075,322)],
+    ['Stoughton', 'buildings/stoughton.png', (170,518), (170,465)],
+    ['Hollis', 'buildings/stoughton.png', (386,518), (386,465)],
+    ['Thayer', 'buildings/thayer.png', (274,70), (272,135)],
+    ['University Hall', 'buildings/universityhall.png', (624,128), (681,195)],
+    ['Mower', 'buildings/mower.png', (168,732), (168,687)],
+    ['Lionel', 'buildings/mower.png', (388,732), (388,687)],
+    ['Holworthy', 'buildings/holworthy.png', (54,328), (100,328)],
+    ['Weld', 'buildings/weld.png', (922,78), (922,155)],
+    ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (100,626)],
+    ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (278,605)],
+    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (576,632)],
+    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (698,574)],
+    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
+    ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
+    ['Straus', 'buildings/straus.png', (948,702), (948,662)],
+    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
+]
+
+# checkpoint info list
+infoqueue = []
+
+
+def create_border_surface(text_rect, padding):
+    """ Creates border around text """
+    return Rect((text_rect.left - padding), (text_rect.top - padding), (text_rect.width + (padding * 2)), (text_rect.height + (padding * 2)))
 
 # following UI text code from tutorial (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
@@ -40,6 +93,7 @@ def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     font = pygame.freetype.SysFont("Courier", font_size, bold=True)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert_alpha()
+
 
 class UIElement(pygame.sprite.Sprite):
     """ An user interface element that can be added to a surface """
@@ -98,52 +152,6 @@ class UIElement(pygame.sprite.Sprite):
     def draw(self, surface):
         """ Draws element onto a surface """
         surface.blit(self.image, self.rect)
-
-
-# player animation frames
-pframe = 4
-player_frames = [
-    pygame.image.load('pixilart-frames/pixil-frame-0.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-1.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-2.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-3.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-4.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-5.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-6.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-7.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-8.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-9.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-10.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-11.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-12.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-13.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-14.png'),
-    pygame.image.load('pixilart-frames/pixil-frame-15.png')
-]
-
-# building skins and locations
-building_list = [
-    ['Grays', 'buildings/grays.png', (1132,322), (1075,322)],
-    ['Stoughton', 'buildings/stoughton.png', (170,518), (170,465)],
-    ['Hollis', 'buildings/stoughton.png', (386,518), (386,465)],
-    ['Thayer', 'buildings/thayer.png', (274,70), (272,135)],
-    ['University Hall', 'buildings/universityhall.png', (624,128), (681,195)],
-    ['Mower', 'buildings/mower.png', (168,732), (168,687)],
-    ['Lionel', 'buildings/mower.png', (388,732), (388,687)],
-    ['Holworthy', 'buildings/holworthy.png', (54,328), (100,328)],
-    ['Weld', 'buildings/weld.png', (922,78), (922,155)],
-    ['Phillips Brooks House', 'buildings/phillipsbrooks.png', (46,626), (100,626)],
-    ['Holden Chapel', 'buildings/holdenchapel.png', (278,658), (278,605)],
-    ['Harvard Hall', 'buildings/harvardhall.png', (520,632), (576,632)],
-    ['Massachusetts Hall', 'buildings/masshall.png', (748,616), (698,574)],
-    ['Johnston Gate House', 'buildings/gatehouse.png', (614,702), (632,702)],
-    ['Matthews', 'buildings/matthews.png', (942,512), (942,456)],
-    ['Straus', 'buildings/straus.png', (948,702), (948,662)],
-    ['John Harvard Statue', 'buildings/johnharvard.png', (624,175), (624,220)]
-]
-
-# checkpoint info list
-infoqueue = []
 
 
 # define player sprite
@@ -232,8 +240,8 @@ class Building_checkpoint(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(xy)) # the locations of the checkpoints
         self.info = create_surface_with_text(name, 12, WHITE, CRIMSON)
         self.info_rect = self.info.get_rect(center=xy)
+        self.border = create_border_surface(self.info_rect, 4)
         self.tracker = 0
-        self.border = Rect(self.info_rect.left - 4, self.info_rect.top - 4, (self.info_rect.width + 8), (self.info_rect.height + 8))
 
     def update(self, player, infoqueue):
         if Rect.colliderect(self.rect, player.hitbox):
@@ -244,7 +252,7 @@ class Building_checkpoint(pygame.sprite.Sprite):
             infoqueue.remove([self.info, self.info_rect, self.border])
       
         if self.tracker == 1:
-            # contacts checkpoint (runs once)
+            # checkpoint first contact
             infoqueue.append([self.info, self.info_rect, self.border])
 
 
@@ -316,22 +324,36 @@ def main():
         if game_state == GameState.TITLE:
             game_state = title_screen(screen)
 
+        if game_state == GameState.CREDITS:
+            game_state = credits_screen(screen)
+
         if game_state == GameState.NEWGAME:
             game_state = play_level(screen)
 
+        if game_state == GameState.GAMEOVER:
+            game_state = end_screen(screen)
+        
         if game_state == GameState.QUIT:
             pygame.quit()
             return
 
         
 def title_screen(screen):
-    start_btn = UIElement(
+    play_btn = UIElement(
+        center_position=(600, 300),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Play",
+        action=GameState.NEWGAME,
+    )
+    credits_btn = UIElement(
         center_position=(600, 400),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Start",
-        action=GameState.NEWGAME,
+        text="Credits",
+        action=GameState.CREDITS
     )
     quit_btn = UIElement(
         center_position=(600, 500),
@@ -342,7 +364,7 @@ def title_screen(screen):
         action=GameState.QUIT
     )
 
-    buttons = [start_btn, quit_btn]
+    buttons = [play_btn, credits_btn, quit_btn]
 
     # main loop
     while True:
@@ -370,7 +392,103 @@ def title_screen(screen):
 
         pygame.display.flip()
 
-     
+
+def credits_screen(screen):
+    home_btn = UIElement(
+        center_position=(600, 500),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Home",
+        action=GameState.TITLE,
+    )
+
+    buttons = [home_btn]
+
+    # main loop
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            # register right clicks
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+            
+            screen.fill(CRIMSON)
+            credits_a = create_surface_with_text('A game by Elisabeth Ngo and Adam Wang')
+            credits_b = create_surface_with_text('Created December, 2022 for Harvard CS50')
+
+            # KEYDOWN event
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return GameState.QUIT
+            # window close
+            elif event.type == QUIT:
+                return GameState.QUIT
+
+        for button in buttons:
+            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+            if ui_action is not None:
+                return ui_action
+            button.draw(screen)
+
+        pygame.display.flip()
+        
+        
+def end_screen(screen):
+    play_btn = UIElement(
+        center_position=(600, 300),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Play again",
+        action=GameState.NEWGAME,
+    )
+    home_btn = UIElement(
+        center_position=(600, 400),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Home",
+        action=GameState.TITLE,
+    )
+    quit_btn = UIElement(
+        center_position=(600, 500),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Quit",
+        action=GameState.QUIT
+    )
+
+    buttons = [play_btn, home_btn, quit_btn]
+
+    # main loop
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            # register right clicks
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+            
+            screen.fill(CRIMSON)
+
+            # KEYDOWN event
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return GameState.QUIT
+            # window close
+            elif event.type == QUIT:
+                return GameState.QUIT
+
+        for button in buttons:
+            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+            if ui_action is not None:
+                return ui_action
+            button.draw(screen)
+
+        pygame.display.flip()
+
+              
 def play_level(screen):
     # set background
     bg = pygame.image.load('grasstile.png').convert()
@@ -405,6 +523,8 @@ def play_level(screen):
         checkpoints.add(new_checkpoint)
         all_sprites.add(new_checkpoint)
 
+    all_sprites.add(player)
+
     # game loop
     while True:
 
@@ -421,9 +541,6 @@ def play_level(screen):
                 new_tourist = Tourist()
                 tourists.add(new_tourist)
                 all_sprites.add(new_tourist)
-
-        # add player to sprite group
-        all_sprites.add(player)
         
         # record keys pressed
         pressed_keys = pygame.key.get_pressed()
@@ -470,5 +587,7 @@ def play_level(screen):
 
         # set framerate
         clock.tick(30)
+        global time
+        time += 1
 
 main()
