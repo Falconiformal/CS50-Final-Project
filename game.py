@@ -37,6 +37,9 @@ BLACK = (0, 0, 0)
 clock = pygame.time.Clock()
 time = 0
 
+# score
+score = 300
+
 # player animation frames
 pframe = 4
 player_frames = [
@@ -87,8 +90,6 @@ def create_border_surface(text_rect, padding):
     """ Creates border around text """
     return Rect((text_rect.left - padding), (text_rect.top - padding), (text_rect.width + (padding * 2)), (text_rect.height + (padding * 2)))
 
-# score
-score = 300
 
 # following UI text code from tutorial (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
