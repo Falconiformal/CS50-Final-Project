@@ -41,7 +41,7 @@ TPS = 10
 # starting score
 SCORE = 300
 # objectives
-OBJECTIVES = 4
+OBJECTIVES = 5
 
 # sound setup
 pygame.mixer.init()
@@ -111,7 +111,8 @@ locations = [
     ['Harvard Yard Operations (Yard Ops)', 'Weld'],
     ['The Phillips Brooks House Association', 'Phillips Brooks House'],
     ['The Harvard Foundation for Intercultural and Race Relations', 'Grays'],
-    ['The Office of BGLTQ Student Life (QuOffice)', 'Thayer']
+    ['The Office of BGLTQ Student Life (QuOffice)', 'Thayer'],
+    ['Holden Chapel', 'Holden Chapel']
 ]
 
 # target order
@@ -132,14 +133,18 @@ def create_border_surface(text_rect, padding):
     return Rect((text_rect.left - padding), (text_rect.top - padding), (text_rect.width + (padding * 2)), (text_rect.height + (padding * 2)))
 
 
-# following UI text code from tutorial (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
+# Following UI text code from tutorial: 
+# Barthaud, Danny. (2019, September 12). "Handling a title screen, game flow and buttons in pygame." Programming Pixels.
+# https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     """ Returns surface with text written on """
     font = pygame.freetype.SysFont('Courier', font_size, bold=True)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert()
 
-
+# Following UI text code from tutorial: 
+# Barthaud, Danny. (2019, September 12). "Handling a title screen, game flow and buttons in pygame." Programming Pixels.
+# https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
 class UIElement(pygame.sprite.Sprite):
     """ An user interface element that can be added to a surface """
 
@@ -364,7 +369,7 @@ class Tourist(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(
             center=(
                 sides[pickSide][0]
-            ) # these would set random locations for the tourists along edges
+            ) # these set random locations for the tourists along edges
         )
 
         self.speedx = sides[pickSide][1]
@@ -406,7 +411,9 @@ class Tourist(pygame.sprite.Sprite):
             self.kill()
 
 
-# game loop adapted from (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
+# Game loop adapted from: 
+# Barthaud, Danny. (2019, September 12). "Handling a title screen, game flow and buttons in pygame." Programming Pixels.
+# https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html
 def main():
     # initialize
     pygame.init()
@@ -487,8 +494,8 @@ def home_screen(screen):
     bg = pygame.image.load('backgrounds/homebg.png').convert()
     screen.fill(BLACK)
 
-    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
-    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # Music Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Music License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
     pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
@@ -522,31 +529,55 @@ def home_screen(screen):
 
 
 def credits_screen(screen):
-    home_btn = UIElement(
-        center_position=(600, 700),
-        font_size=30,
-        bg_rgb=CRIMSON,
-        text_rgb=WHITE,
-        text='Home',
-        padding = 16,
-        border_radius = 8,
-        action=GameState.HOME,
-    )
+    credits_height = SCREEN_HEIGHT + 400
+    counter = 0
+    scrolly_top = SCREEN_HEIGHT
+    
 
-    buttons = [home_btn]
+    home_btn = pygame.image.load('buttons/home_btn.png').convert()
+    home_btn.set_colorkey(BLACK, RLEACCEL)
+    highlight_btn = pygame.image.load('buttons/home_btn_hover.png').convert()
+    highlight_btn.set_colorkey(BLACK, RLEACCEL)
+    home_rect = home_btn.get_rect(center=(30,30))
+    highlight_rect = highlight_btn.get_rect(center=(30,30))
     
     bg = pygame.image.load('backgrounds/creditsbg.png').convert()
     screen.fill(BLACK)
     
-    # TODO title, class, dorm, concentration, sound credits, ... and instructions?
     credits = [
-        [create_surface_with_text('A game by Elisabeth Ngo and Adam Wang', 25, CRIMSON, (255, 214, 64)), (550, 100)],
-        [create_surface_with_text('Created December, 2022 for Harvard CS50', 25, CRIMSON, (255, 214, 64)), (550, 140)]
-    ]
+        [create_surface_with_text('CAMPUS CROSSER', 40, WHITE, BLACK), 60],
+        [create_surface_with_text('A game by Elisabeth Ngo and Adam Wang', 25, WHITE, BLACK), 120],
+        [create_surface_with_text('MUSIC', 25, WHITE, BLACK), 260],
+        [create_surface_with_text('Square Foot Ocean', 20, WHITE, BLACK), 315],
+        [create_surface_with_text('Martijn de Boer (NiGiD) (c) copyright 2022', 15, WHITE, BLACK), 340],
+        [create_surface_with_text('Creative Commons Attribution', 15, WHITE, BLACK), 360],
+        [create_surface_with_text('Noncommercial (3.0) license', 15, WHITE, BLACK), 380],
+        [create_surface_with_text('Floating Through Time (SAW mix)', 20, WHITE, BLACK), 435],
+        [create_surface_with_text('stellarartwars (c) copyright 2016', 15, WHITE, BLACK), 460],
+        [create_surface_with_text('Created December, 2022 for Harvard CS50', 15, WHITE, BLACK), 480],
+        [create_surface_with_text('Creative Commons Attribution', 15, WHITE, BLACK), 500],
+        [create_surface_with_text('Noncommercial (3.0) license', 15, WHITE, BLACK), 520],
+        [create_surface_with_text('Sound effects from Mixkit', 20, WHITE, BLACK), 600],
+        [create_surface_with_text('Some code adapted from tutorials (see source code)', 20, WHITE, BLACK), 680],
+        [create_surface_with_text('ABOUT US', 25, WHITE, BLACK), 780],
+        [create_surface_with_text('Elisabeth Ngo', 20, WHITE, BLACK), 835],
+        [create_surface_with_text('Harvard Class of 2026, I live in Stoughton Hall', 15, WHITE, BLACK), 860],
+        [create_surface_with_text('Unsure of what I will concentrate in', 15, WHITE, BLACK), 880],
+        [create_surface_with_text('Adam Wang', 20, WHITE, BLACK), 935],
+        [create_surface_with_text('Harvard Class of 2026, I live in Grays Hall', 15, WHITE, BLACK), 960],
+        [create_surface_with_text('Potential engineering concentrator', 15, WHITE, BLACK), 980],
+        [create_surface_with_text('Created December, 2022 for Harvard CS50', 20, WHITE, BLACK), 1150],
 
+    ]
+    
     # main loop
     while True:
         mouse_up = False
+        counter += 1
+
+        if scrolly_top < -200 - credits_height:
+            return GameState.HOME
+
         for event in pygame.event.get():
             # register right clicks
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -561,17 +592,25 @@ def credits_screen(screen):
                 return GameState.QUIT
         
         screen.blit(bg, (0,0))
+
+        credits_rect = (250, scrolly_top, 700, credits_height)
+        pygame.draw.rect(screen, CRIMSON, credits_rect)
+        
+        if counter % 8 == 0:
+            scrolly_top -= 1
         
         for credit in credits:
-            credit[0].set_colorkey((255, 214, 64), RLEACCEL)
-            screen.blit(credit[0], credit[0].get_rect(center=credit[1]))
-
-        for button in buttons:
-            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
-            if ui_action is not None:
+            credit[0].set_colorkey((BLACK), RLEACCEL)
+            placement = scrolly_top + credit[1]
+            if placement > 0 and placement < SCREEN_HEIGHT:
+                screen.blit(credit[0], credit[0].get_rect(center=(SCREEN_WIDTH/2, placement)))
+        
+        screen.blit(home_btn, home_rect)
+        if home_rect.collidepoint(pygame.mouse.get_pos()):
+            screen.blit(highlight_btn, highlight_rect)
+            if mouse_up:
                 button_sound.play()
-                return ui_action
-            button.draw(screen)
+                return GameState.HOME
 
         pygame.display.flip()
         
@@ -612,8 +651,8 @@ def end_screen(screen):
     bg = pygame.image.load('backgrounds/gameoverbg.png').convert()
     screen.fill(BLACK)
 
-    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
-    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # Music Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Music License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
     pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
@@ -726,6 +765,7 @@ def win_screen(screen):
 
         pygame.display.flip()
 
+
 def instructions_screen(screen):
     home_btn = UIElement(
         center_position=(600, 700),
@@ -785,6 +825,9 @@ def instructions_screen(screen):
         pygame.display.flip()
 
 
+# Basics of game design adapted from: 
+# Fincher, Jon. (2019, September 16). "PyGame: A Primer on Game Programming in Python." RealPython.
+# https://realpython.com/pygame-a-primer/
 def play_level(screen):
     global score
     global time
@@ -956,7 +999,7 @@ def play_level(screen):
             pygame.draw.rect(screen, CRIMSON, border, border_radius = 6)
             screen.blit(scoredisplay, score_rect)
                 
-            # draw buttons, add functionality
+            # draw home and pause buttons, add functionality
             for button in buttons:
                 button[1].set_colorkey(BLACK, RLEACCEL)
                 button[3].set_colorkey(BLACK, RLEACCEL)
