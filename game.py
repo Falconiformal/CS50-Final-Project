@@ -913,14 +913,13 @@ def play_level(screen):
                 if info[3] == targets[0][1]:
                     checkedpoints.append(info[3])
                     checkpoint_sound.play()
-                del targets[0]
+                    del targets[0]
 
                 # check for empty list
                 if len(targets) == 0:
                     # win
                     win_sound.play()
                     return GameState.WIN
-
                 # display on screen
                 instructions.append('Please find ' + targets[0][0] + '.')
                 goaltext = instructions[0]
@@ -936,7 +935,7 @@ def play_level(screen):
                 pygame.time.wait(2000)
 
                 # clear
-                instructions.clear()       
+                instructions.clear()     
             
             # set framerate
             clock.tick(30)
@@ -946,7 +945,7 @@ def play_level(screen):
 
             if score <= 0:
                 lose_sound.play()
-            return GameState.GAMEOVER
+                return GameState.GAMEOVER
         
         # update display
         pygame.display.flip()
