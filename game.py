@@ -37,6 +37,17 @@ RED = (255, 0, 0)
 
 # sound setup
 pygame.mixer.init()
+# Sound Source: Mixkit
+# https://mixkit.co/free-sound-effects/hurt/
+collision_sound = pygame.mixer.Sound("mixkit_ow.wav")
+# https://mixkit.co/free-sound-effects/win/
+checkpoint_sound = pygame.mixer.Sound("mixkit_retro_game_notification.wav")
+# https://mixkit.co/free-sound-effects/click/
+button_sound = pygame.mixer.Sound("mixkit_typewriter_soft_click.wav")
+# https://mixkit.co/free-sound-effects/win/
+win_sound = pygame.mixer.Sound("mixkit_video_game_win.wav")
+# https://mixkit.co/free-sound-effects/game-over/
+lose_sound = pygame.mixer.Sound("mixkit_retro_arcade_game_over.wav")
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -371,10 +382,12 @@ class Tourist(pygame.sprite.Sprite):
         elif self.tracker != 0:
             self.tracker = 0
             player.show_point_deduction('-20', self.tracker)
+            collision_sound.play()
         
         if self.tracker == 1:
             score = score - 20
             player.show_point_deduction('-20', self.tracker)
+            collision_sound.play()
 
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
@@ -475,6 +488,7 @@ def title_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -528,6 +542,7 @@ def credits_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -597,6 +612,7 @@ def end_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -677,6 +693,7 @@ def win_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -822,11 +839,13 @@ def play_level(screen):
         # check for matches 
         for info in infoqueue:
             if info[3] == targets[0][1]:
+                checkpoint_sound.play()
                 del targets[0]
 
                 # check for empty list
                 if len(targets) == 0:
                     # win
+                    win_sound.play()
                     return GameState.WIN
 
                 # display on screen
@@ -864,6 +883,7 @@ def play_level(screen):
             score -= 1
 
         if score <= 0:
+            lose_sound.play()
             return GameState.GAMEOVER
 
 main()
