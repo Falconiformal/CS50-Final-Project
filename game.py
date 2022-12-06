@@ -42,6 +42,17 @@ SCORE = 300
 
 # sound setup
 pygame.mixer.init()
+# Sound Source: Mixkit
+# https://mixkit.co/free-sound-effects/hurt/
+collision_sound = pygame.mixer.Sound("mixkit_ow.wav")
+# https://mixkit.co/free-sound-effects/win/
+checkpoint_sound = pygame.mixer.Sound("mixkit_retro_game_notification.wav")
+# https://mixkit.co/free-sound-effects/click/
+button_sound = pygame.mixer.Sound("mixkit_typewriter_soft_click.wav")
+# https://mixkit.co/free-sound-effects/win/
+win_sound = pygame.mixer.Sound("mixkit_video_game_win.wav")
+# https://mixkit.co/free-sound-effects/game-over/
+lose_sound = pygame.mixer.Sound("mixkit_retro_arcade_game_over.wav")
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -381,10 +392,12 @@ class Tourist(pygame.sprite.Sprite):
         elif self.tracker != 0:
             self.tracker = 0
             player.show_point_deduction('-20', self.tracker)
+            collision_sound.play()
         
         if self.tracker == 1:
             score = score - 20
             player.show_point_deduction('-20', self.tracker)
+            collision_sound.play()
 
         if self.rect.left > SCREEN_WIDTH or self.rect.right < 0 or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
             self.kill()
@@ -458,6 +471,12 @@ def home_screen(screen):
     bg = pygame.image.load('backgrounds/homebg.png').convert()
     screen.fill(BLACK)
 
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
+
     # main loop
     while True:
         mouse_up = False
@@ -479,6 +498,7 @@ def home_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -532,6 +552,7 @@ def credits_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -574,6 +595,12 @@ def end_screen(screen):
     bg = pygame.image.load('backgrounds/gameoverbg.png').convert()
     screen.fill(BLACK)
 
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
+
     # main loop
     while True:
         mouse_up = False
@@ -595,6 +622,7 @@ def end_screen(screen):
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -637,6 +665,16 @@ def win_screen(screen):
     bg = pygame.image.load('backgrounds/winbg.png').convert()
     screen.fill(BLACK)
 
+    # display score
+    finalscoretext = 'Score: ' + str(score)
+    finalscore = [create_surface_with_text(finalscoretext, 40, WHITE, BLACK), (600, 350)]
+
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
+
     # main loop
     while True:
         mouse_up = False
@@ -655,9 +693,17 @@ def win_screen(screen):
             
         screen.blit(bg, (0,0))
 
+        finalscore[0].set_colorkey((255, 255, 0), RLEACCEL)
+        score_rect = finalscore[0].get_rect(center=finalscore[1])
+        finalscoreborder = create_border_surface(score_rect, 16)
+        pygame.draw.rect(screen, BLACK, finalscoreborder, border_radius = 12)
+        screen.blit(finalscore[0], score_rect)
+
+
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
+                button_sound.play()
                 return ui_action
             button.draw(screen)
 
@@ -675,6 +721,12 @@ def play_level(screen):
     checkedpoints.clear()
 
     paused = False
+
+    # Sound Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
+    # http://dig.ccmixter.org/files/stellarartwars/55017 Ft: Jeris
+    pygame.mixer.music.load("stellarartwars_Floating_Through_Time.mp3")
+    pygame.mixer.music.play(loops=-1)
 
     # set background
     bg = pygame.image.load('backgrounds/grasstile.png').convert()
@@ -860,29 +912,31 @@ def play_level(screen):
             for info in infoqueue:
                 if info[3] == targets[0][1]:
                     checkedpoints.append(info[3])
-                    del targets[0]
+                    checkpoint_sound.play()
+                del targets[0]
 
-                    # check for empty list
-                    if len(targets) == 0:
-                        # win
-                        return GameState.WIN
+                # check for empty list
+                if len(targets) == 0:
+                    # win
+                    win_sound.play()
+                    return GameState.WIN
 
-                    # display on screen
-                    instructions.append('Please find ' + targets[0][0] + '.')
-                    goaltext = instructions[0]
-                    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
-                    goal_rect = goaldisplay.get_rect(center=(600, 400))
-                    goal_border = create_border_surface(goal_rect, 6)
-                    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
-                    screen.blit(goaldisplay, goal_rect)
+                # display on screen
+                instructions.append('Please find ' + targets[0][0] + '.')
+                goaltext = instructions[0]
+                goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+                goal_rect = goaldisplay.get_rect(center=(600, 400))
+                goal_border = create_border_surface(goal_rect, 6)
+                pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+                screen.blit(goaldisplay, goal_rect)
 
-                    pygame.display.flip()
+                pygame.display.flip()
 
-                    # wait
-                    pygame.time.wait(2000)
+                # wait
+                pygame.time.wait(2000)
 
-                    # clear
-                    instructions.clear()       
+                # clear
+                instructions.clear()       
             
             # set framerate
             clock.tick(30)
@@ -891,7 +945,8 @@ def play_level(screen):
                 score -= 1
 
             if score <= 0:
-                return GameState.GAMEOVER
+                lose_sound.play()
+            return GameState.GAMEOVER
         
         # update display
         pygame.display.flip()
