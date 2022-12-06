@@ -566,8 +566,7 @@ def credits_screen(screen):
         [create_surface_with_text('Adam Wang', 20, WHITE, BLACK), 935],
         [create_surface_with_text('Harvard Class of 2026, I live in Grays Hall', 15, WHITE, BLACK), 960],
         [create_surface_with_text('Potential engineering concentrator', 15, WHITE, BLACK), 980],
-        [create_surface_with_text('Created December, 2022 for Harvard CS50', 20, WHITE, BLACK), 1150],
-
+        [create_surface_with_text('Created December, 2022 for Harvard CS50', 20, WHITE, BLACK), 1150]
     ]
     
     # main loop
@@ -1076,5 +1075,6 @@ def play_level(screen):
         
         # update display
         pygame.display.flip()
+
 
 main()
