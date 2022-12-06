@@ -85,11 +85,14 @@ building_list = [
 
 # target locations
 locations = [
-    'Harvard Yard Operations (Yard Ops)',
-    'Phillips Brooks House',
-    'Harvard Foundation for Intercultural and Race Relations',
-    'Office of BGLTQ Student Life (QuOffice)'
+    ['Harvard Yard Operations (Yard Ops)', 'Weld'],
+    ['The Phillips Brooks House Association', 'Phillips Brooks House'],
+    ['The Harvard Foundation for Intercultural and Race Relations', 'Grays'],
+    ['The Office of BGLTQ Student Life (QuOffice)', 'Thayer']
 ]
+
+# target order
+targets = []
 
 # checkpoint info list
 infoqueue = []
@@ -285,6 +288,7 @@ class Building_checkpoint(pygame.sprite.Sprite):
         self.info = create_surface_with_text(name, 12, WHITE, CRIMSON)
         self.info_rect = self.info.get_rect(center=xy)
         self.border = create_border_surface(self.info_rect, 4)
+        self.name = name
         self.tracker = 0
 
     def update(self, player, infoqueue):
@@ -297,7 +301,7 @@ class Building_checkpoint(pygame.sprite.Sprite):
       
         if self.tracker == 1:
             # checkpoint first contact
-            infoqueue.append([self.info, self.info_rect, self.border])
+            infoqueue.append([self.info, self.info_rect, self.border, self.name])
 
 
 # define tourist class
@@ -565,6 +569,11 @@ def end_screen(screen):
               
 def play_level(screen):
     # set background
+    global infoqueue
+
+    # clear infoqueue
+    infoqueue.clear()
+
     bg = pygame.image.load('grasstile.png').convert()
     pathmap = [
         pygame.image.load('yardmaps/pixil-frame-0.png').convert(),
@@ -598,6 +607,35 @@ def play_level(screen):
         all_sprites.add(new_checkpoint)
 
     all_sprites.add(player)
+
+    # add locations to targets in random order
+    sites = len(locations)
+    while len(targets) != len(locations):
+        num = random.randint(0, sites - 1)
+        if locations[num] not in targets:
+            targets.append(locations[num])
+    
+    # call the first find
+    instructions = []
+    instructions.append('Please find ' + targets[0][0] + '.')
+    print(instructions)
+    goaltext = instructions[0]
+    print(instructions[0])
+    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+    goal_rect = goaldisplay.get_rect(center=(600, 400))
+    goal_border = create_border_surface(goal_rect, 6)
+    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+    screen.blit(goaldisplay, goal_rect)
+    pygame.display.flip()
+
+    # wait
+    pygame.time.wait(2000)
+
+    # clear list
+    instructions.clear()
+
+
+
 
     # game loop
     while True:
@@ -659,6 +697,35 @@ def play_level(screen):
         
         for points in subtraction:
             screen.blit(points[0], points[1])
+
+        # check for matches 
+        for info in infoqueue:
+            if info[3] == targets[0][1]:
+                print(targets)
+                del targets[0]
+
+                # check for empty list
+                if len(targets) == 0:
+                    # win
+                    return GameState.GAMEOVER
+
+                # display on screen
+                instructions.append('Please find ' + targets[0][0] + '.')
+                goaltext = instructions[0]
+                goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+                goal_rect = goaldisplay.get_rect(center=(600, 400))
+                goal_border = create_border_surface(goal_rect, 6)
+                pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+                screen.blit(goaldisplay, goal_rect)
+
+                pygame.display.flip()
+
+                # wait
+                pygame.time.wait(2000)
+
+                # clear
+                instructions.clear()
+
 
         # display score
         global score
