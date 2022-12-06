@@ -816,6 +816,7 @@ def play_level(screen):
                 screen.blit(play_btn[2], play_highlight_rect)
                 if mouse_up:
                     button_sound.play()
+                    pygame.mixer.music.play(loops=-1)
                     paused = False
                     mouse_up = False
 
@@ -892,6 +893,7 @@ def play_level(screen):
                             return GameState.HOME
                         else:
                             button_sound.play()
+                            pygame.mixer.music.stop()
                             screen.blit(button[1], button_rect)
                             paused = True       
 
