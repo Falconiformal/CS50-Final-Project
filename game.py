@@ -39,20 +39,22 @@ RED = (255, 0, 0)
 TPS = 10
 # starting score
 SCORE = 300
+# objectives
+OBJECTIVES = 4
 
 # sound setup
 pygame.mixer.init()
 # Sound Source: Mixkit
 # https://mixkit.co/free-sound-effects/hurt/
-collision_sound = pygame.mixer.Sound("mixkit_ow.wav")
+collision_sound = pygame.mixer.Sound('mixkit_ow.wav')
 # https://mixkit.co/free-sound-effects/win/
-checkpoint_sound = pygame.mixer.Sound("mixkit_retro_game_notification.wav")
+checkpoint_sound = pygame.mixer.Sound('mixkit_retro_game_notification.wav')
 # https://mixkit.co/free-sound-effects/click/
-button_sound = pygame.mixer.Sound("mixkit_typewriter_soft_click.wav")
+button_sound = pygame.mixer.Sound('mixkit_typewriter_soft_click.wav')
 # https://mixkit.co/free-sound-effects/win/
-win_sound = pygame.mixer.Sound("mixkit_video_game_win.wav")
+win_sound = pygame.mixer.Sound('mixkit_video_game_win.wav')
 # https://mixkit.co/free-sound-effects/game-over/
-lose_sound = pygame.mixer.Sound("mixkit_retro_arcade_game_over.wav")
+lose_sound = pygame.mixer.Sound('mixkit_retro_arcade_game_over.wav')
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -777,9 +779,12 @@ def play_level(screen):
         all_sprites.add(new_checkpoint)
 
     # add locations to targets in random order
-    sites = len(locations)
-    while len(targets) != len(locations):
-        num = random.randint(0, sites - 1)
+    if OBJECTIVES > len(locations):
+        sites = len(locations)
+    else:
+        sites = OBJECTIVES
+    while len(targets) != sites:
+        num = random.randint(0, len(locations) - 1)
         if locations[num] not in targets:
             targets.append(locations[num])
 
