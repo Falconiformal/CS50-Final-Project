@@ -815,6 +815,7 @@ def play_level(screen):
             if play_rect.collidepoint(pygame.mouse.get_pos()):
                 screen.blit(play_btn[2], play_highlight_rect)
                 if mouse_up:
+                    button_sound.play()
                     paused = False
                     mouse_up = False
 
@@ -887,8 +888,10 @@ def play_level(screen):
                     screen.blit(button[3], highlight_rect)
                     if mouse_up:
                         if button[0] == 'home':
+                            button_sound.play()
                             return GameState.HOME
                         else:
+                            button_sound.play()
                             screen.blit(button[1], button_rect)
                             paused = True       
 
