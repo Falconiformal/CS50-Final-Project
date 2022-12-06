@@ -538,6 +538,7 @@ def credits_screen(screen):
     bg = pygame.image.load('backgrounds/creditsbg.png').convert()
     screen.fill(BLACK)
     
+    # TODO title, class, dorm, concentration, sound credits, ... and instructions?
     credits = [
         [create_surface_with_text('A game by Elisabeth Ngo and Adam Wang', 25, CRIMSON, (255, 214, 64)), (550, 100)],
         [create_surface_with_text('Created December, 2022 for Harvard CS50', 25, CRIMSON, (255, 214, 64)), (550, 140)]
@@ -739,12 +740,17 @@ def instructions_screen(screen):
 
     buttons = [home_btn]
     
-    bg = pygame.image.load('backgrounds/creditsbg.png').convert()
+    bg = pygame.image.load('backgrounds/instructionsbg.png').convert()
     screen.fill(BLACK)
     
     instructions = [
-        [create_surface_with_text('Instructions:', 25, CRIMSON, (255, 214, 64)), (550, 100)],
-        [create_surface_with_text('Move player using arrow keys...', 25, CRIMSON, (255, 214, 64)), (550, 140)]
+        [create_surface_with_text('Welcome to Campus Crosser!', 30, WHITE, CRIMSON), (600, 160)],
+        [create_surface_with_text('Find important places in the Yard before your score reaches zero.', 22, WHITE, CRIMSON), (600, 220)],
+        [create_surface_with_text('Move the player using arrow keys.', 22, WHITE, CRIMSON), (600, 260)],
+        [create_surface_with_text('Find targets by touching the points in front of buildings.', 22, WHITE, CRIMSON), (600, 300)],
+        [create_surface_with_text('Don\'t run into others in the Yard; you will lose 20 points.', 22, WHITE, CRIMSON), (600, 340)],
+        [create_surface_with_text('Hurry! Your score also decreases as time goes on.', 22, WHITE, CRIMSON), (600, 380)],
+        [create_surface_with_text('Good luck! Have fun Campus Crossing!', 22, WHITE, CRIMSON), (600, 460)]
     ]
 
     # main loop
