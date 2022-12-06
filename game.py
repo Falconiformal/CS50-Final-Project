@@ -197,7 +197,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect(center=(600, 400))
 
     def show_point_deduction(self, points, state):
-        ''' Visuals for point deduction '''
+        """ Visuals for point deduction """
         self.bye_points = create_surface_with_text(points, 13, RED, WHITE)
         self.bye_points.set_colorkey(WHITE, RLEACCEL)
         self.bye_rect = self.bye_points.get_rect(center=(self.rect.centerx, self.rect.centery - 50))
