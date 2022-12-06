@@ -727,9 +727,7 @@ def play_level(screen):
     # clear list
     instructions.clear()
 
-
-
-
+    
     # game loop
     while True:
 
@@ -797,7 +795,7 @@ def play_level(screen):
                 # check for empty list
                 if len(targets) == 0:
                     # win
-                    return GameState.GAMEOVER
+                    return GameState.WIN
 
                 # display on screen
                 instructions.append('Please find ' + targets[0][0] + '.')
@@ -815,7 +813,6 @@ def play_level(screen):
 
                 # clear
                 instructions.clear()
-
 
         # display score
         scoretext = 'Score: ' + str(score)
