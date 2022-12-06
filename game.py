@@ -39,6 +39,8 @@ RED = (255, 0, 0)
 TPS = 5
 # starting score
 SCORE = 300
+# objectives
+OBJECTIVES = 4
 
 # sound setup
 pygame.mixer.init()
@@ -777,9 +779,12 @@ def play_level(screen):
         all_sprites.add(new_checkpoint)
 
     # add locations to targets in random order
-    sites = len(locations)
-    while len(targets) != len(locations):
-        num = random.randint(0, sites - 1)
+    if OBJECTIVES > len(locations):
+        sites = len(locations)
+    else:
+        sites = OBJECTIVES
+    while len(targets) != sites:
+        num = random.randint(0, len(locations) - 1)
         if locations[num] not in targets:
             targets.append(locations[num])
 
