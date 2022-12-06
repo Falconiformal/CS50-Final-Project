@@ -46,15 +46,15 @@ OBJECTIVES = 4
 pygame.mixer.init()
 # Sound Source: Mixkit
 # https://mixkit.co/free-sound-effects/hurt/
-collision_sound = pygame.mixer.Sound('mixkit_ow.wav')
+collision_sound = pygame.mixer.Sound('sounds/mixkit_ow.wav')
 # https://mixkit.co/free-sound-effects/win/
-checkpoint_sound = pygame.mixer.Sound('mixkit_retro_game_notification.wav')
+checkpoint_sound = pygame.mixer.Sound('sounds/mixkit_retro_game_notification.wav')
 # https://mixkit.co/free-sound-effects/click/
-button_sound = pygame.mixer.Sound('mixkit_typewriter_soft_click.wav')
+button_sound = pygame.mixer.Sound('sounds/mixkit_typewriter_soft_click.wav')
 # https://mixkit.co/free-sound-effects/win/
-win_sound = pygame.mixer.Sound('mixkit_video_game_win.wav')
+win_sound = pygame.mixer.Sound('sounds/mixkit_video_game_win.wav')
 # https://mixkit.co/free-sound-effects/game-over/
-lose_sound = pygame.mixer.Sound('mixkit_retro_arcade_game_over.wav')
+lose_sound = pygame.mixer.Sound('sounds/mixkit_retro_arcade_game_over.wav')
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -134,7 +134,7 @@ def create_border_surface(text_rect, padding):
 # following UI text code from tutorial (https://programmingpixels.com/handling-a-title-screen-game-flow-and-buttons-in-pygame.html)
 def create_surface_with_text(text, font_size, text_rgb, bg_rgb):
     """ Returns surface with text written on """
-    font = pygame.freetype.SysFont("Courier", font_size, bold=True)
+    font = pygame.freetype.SysFont('Courier', font_size, bold=True)
     surface, _ = font.render(text=text, fgcolor=text_rgb, bgcolor=bg_rgb)
     return surface.convert()
 
@@ -442,7 +442,7 @@ def home_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Play",
+        text='Play',
         padding = 16,
         border_radius = 8,
         action=GameState.NEWGAME,
@@ -452,7 +452,7 @@ def home_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Credits",
+        text='Credits',
         padding = 20,
         border_radius = 8,
         action=GameState.CREDITS
@@ -462,7 +462,7 @@ def home_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Quit",
+        text='Quit',
         padding = 16,
         border_radius = 8,
         action=GameState.QUIT
@@ -476,7 +476,7 @@ def home_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -513,7 +513,7 @@ def credits_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Home",
+        text='Home',
         padding = 16,
         border_radius = 8,
         action=GameState.HOME,
@@ -567,7 +567,7 @@ def end_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Play again",
+        text='Play again',
         padding = 16,
         border_radius = 8,
         action=GameState.NEWGAME,
@@ -577,7 +577,7 @@ def end_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Home",
+        text='Home',
         padding = 20,
         border_radius = 8,
         action=GameState.HOME,
@@ -587,7 +587,7 @@ def end_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Quit",
+        text='Quit',
         padding = 16,
         border_radius = 8,
         action=GameState.QUIT
@@ -600,7 +600,7 @@ def end_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -637,7 +637,7 @@ def win_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Play again",
+        text='Play again',
         padding = 16,
         border_radius = 8,
         action=GameState.NEWGAME,
@@ -647,7 +647,7 @@ def win_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Home",
+        text='Home',
         padding = 20,
         border_radius = 8,
         action=GameState.HOME,
@@ -657,7 +657,7 @@ def win_screen(screen):
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
-        text="Quit",
+        text='Quit',
         padding = 16,
         border_radius = 8,
         action=GameState.QUIT
@@ -674,7 +674,7 @@ def win_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -727,7 +727,7 @@ def play_level(screen):
     # Sound Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
     # http://dig.ccmixter.org/files/stellarartwars/55017 Ft: Jeris
-    pygame.mixer.music.load("stellarartwars_Floating_Through_Time.mp3")
+    pygame.mixer.music.load('sounds/stellarartwars_Floating_Through_Time.mp3')
     pygame.mixer.music.play(loops=-1)
 
     # set background
