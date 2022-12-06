@@ -448,6 +448,12 @@ def title_screen(screen):
     bg = pygame.image.load('backgrounds/homebg.png').convert()
     screen.fill(BLACK)
 
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
+
     # main loop
     while True:
         mouse_up = False
@@ -564,6 +570,12 @@ def end_screen(screen):
     bg = pygame.image.load('backgrounds/gameoverbg.png').convert()
     screen.fill(BLACK)
 
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
+
     # main loop
     while True:
         mouse_up = False
@@ -599,7 +611,7 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Play again",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.NEWGAME,
     )
     home_btn = UIElement(
@@ -609,7 +621,7 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Home",
         padding = 20,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.TITLE,
     )
     quit_btn = UIElement(
@@ -619,13 +631,23 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Quit",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.QUIT
     )
 
     buttons = [play_btn, home_btn, quit_btn]
     bg = pygame.image.load('backgrounds/winbg.png').convert()
     screen.fill(BLACK)
+
+    # display score
+    finalscoretext = 'Score: ' + str(score)
+    finalscore = [create_surface_with_text(finalscoretext, 40, WHITE, BLACK), (600, 350)]
+
+    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # http://dig.ccmixter.org/files/NiGiD/65334 
+    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.play(loops=-1)
 
     # main loop
     while True:
@@ -645,6 +667,13 @@ def win_screen(screen):
             
         screen.blit(bg, (0,0))
 
+        finalscore[0].set_colorkey((255, 255, 0), RLEACCEL)
+        score_rect = finalscore[0].get_rect(center=finalscore[1])
+        finalscoreborder = create_border_surface(score_rect, 16)
+        pygame.draw.rect(screen, BLACK, finalscoreborder, border_radius = 12)
+        screen.blit(finalscore[0], score_rect)
+
+
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
             if ui_action is not None:
@@ -661,6 +690,13 @@ def play_level(screen):
     score = 300
     time = 0
     infoqueue.clear()
+    subtraction.clear()
+
+    # Sound Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
+    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
+    # http://dig.ccmixter.org/files/stellarartwars/55017 Ft: Jeris
+    pygame.mixer.music.load("stellarartwars_Floating_Through_Time.mp3")
+    pygame.mixer.music.play(loops=-1)
 
     # set background
     bg = pygame.image.load('backgrounds/grasstile.png').convert()
