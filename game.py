@@ -46,15 +46,15 @@ OBJECTIVES = 4
 pygame.mixer.init()
 # Sound Source: Mixkit
 # https://mixkit.co/free-sound-effects/hurt/
-collision_sound = pygame.mixer.Sound("mixkit_ow.wav")
+collision_sound = pygame.mixer.Sound("sounds/mixkit_ow.wav")
 # https://mixkit.co/free-sound-effects/win/
-checkpoint_sound = pygame.mixer.Sound("mixkit_retro_game_notification.wav")
+checkpoint_sound = pygame.mixer.Sound("sounds/mixkit_retro_game_notification.wav")
 # https://mixkit.co/free-sound-effects/click/
-button_sound = pygame.mixer.Sound("mixkit_typewriter_soft_click.wav")
+button_sound = pygame.mixer.Sound("sounds/mixkit_typewriter_soft_click.wav")
 # https://mixkit.co/free-sound-effects/win/
-win_sound = pygame.mixer.Sound("mixkit_video_game_win.wav")
+win_sound = pygame.mixer.Sound("sounds/mixkit_video_game_win.wav")
 # https://mixkit.co/free-sound-effects/game-over/
-lose_sound = pygame.mixer.Sound("mixkit_retro_arcade_game_over.wav")
+lose_sound = pygame.mixer.Sound("sounds/mixkit_retro_arcade_game_over.wav")
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -476,7 +476,7 @@ def home_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load("sounds/NiGiD_Square_Foot_Ocean.mp3")
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -600,7 +600,7 @@ def end_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load("sounds/NiGiD_Square_Foot_Ocean.mp3")
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -674,7 +674,7 @@ def win_screen(screen):
     # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
-    pygame.mixer.music.load("NiGiD_Square_Foot_Ocean.mp3")
+    pygame.mixer.music.load("sounds/NiGiD_Square_Foot_Ocean.mp3")
     pygame.mixer.music.play(loops=-1)
 
     # main loop
@@ -727,7 +727,7 @@ def play_level(screen):
     # Sound Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
     # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
     # http://dig.ccmixter.org/files/stellarartwars/55017 Ft: Jeris
-    pygame.mixer.music.load("stellarartwars_Floating_Through_Time.mp3")
+    pygame.mixer.music.load("sounds/stellarartwars_Floating_Through_Time.mp3")
     pygame.mixer.music.play(loops=-1)
 
     # set background
