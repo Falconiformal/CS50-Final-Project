@@ -195,10 +195,9 @@ class Player(pygame.sprite.Sprite):
         self.surf = player_frames[pframe].convert()
         self.surf.set_colorkey(WHITE, RLEACCEL)
         self.rect = self.surf.get_rect(center=(600, 400))
-        #self.tracker = 0
 
     def show_point_deduction(self, points, state):
-        ''' Visuals for point deduction '''
+        """ Visuals for point deduction """
         self.bye_points = create_surface_with_text(points, 13, RED, WHITE)
         self.bye_points.set_colorkey(WHITE, RLEACCEL)
         self.bye_rect = self.bye_points.get_rect(center=(self.rect.centerx, self.rect.centery - 50))
@@ -401,7 +400,7 @@ def main():
         if game_state == GameState.NEWGAME:
             game_state = play_level(screen)
         
-        if game_state == GameState.NEWGAME:
+        if game_state == GameState.WIN:
             game_state = win_screen(screen)
 
         if game_state == GameState.GAMEOVER:
@@ -711,9 +710,7 @@ def play_level(screen):
     # call the first find
     instructions = []
     instructions.append('Please find ' + targets[0][0] + '.')
-    print(instructions)
     goaltext = instructions[0]
-    print(instructions[0])
     goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
     goal_rect = goaldisplay.get_rect(center=(600, 400))
     goal_border = create_border_surface(goal_rect, 6)
@@ -789,7 +786,6 @@ def play_level(screen):
         # check for matches 
         for info in infoqueue:
             if info[3] == targets[0][1]:
-                print(targets)
                 del targets[0]
 
                 # check for empty list
