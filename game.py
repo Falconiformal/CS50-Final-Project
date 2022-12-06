@@ -23,6 +23,7 @@ class GameState(Enum):
     TITLE = -1
     QUIT = 0
     NEWGAME = 1
+    WIN = 2
 
 # window dimensions
 SCREEN_WIDTH = 1200
@@ -33,6 +34,9 @@ WHITE = (255, 255, 255)
 CRIMSON = (99, 0, 0)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+
+# sound setup
+pygame.mixer.init()
 
 # clock setup (framerate)
 clock = pygame.time.Clock()
@@ -148,6 +152,11 @@ class UIElement(pygame.sprite.Sprite):
         self.bg_rgb = bg_rgb
         self.border_radius = border_radius
 
+        self.borders = [
+            create_border_surface(self.rects[0], self.padding),
+            create_border_surface(self.rects[1], self.padding)
+        ]
+
         # calls the init method of the parent sprite class
         super().__init__()
 
@@ -159,10 +168,14 @@ class UIElement(pygame.sprite.Sprite):
     @property
     def rect(self):
         return self.rects[1] if self.mouse_over else self.rects[0]
-
+    
+    @property
+    def border(self):
+        return self.borders[1] if self.mouse_over else self.borders[0]
+    
     def update(self, mouse_pos, mouse_up):
         """ Updates text appearance if mouse hover and returns action with click """
-        if self.rect.collidepoint(mouse_pos):
+        if self.border.collidepoint(mouse_pos):
             self.mouse_over = True
             if mouse_up:
                 return self.action
@@ -171,8 +184,7 @@ class UIElement(pygame.sprite.Sprite):
 
     def draw(self, surface):
         """ Draws element onto a surface """
-        border = create_border_surface(self.rect, self.padding)
-        pygame.draw.rect(surface, self.bg_rgb, border, border_radius=self.border_radius)
+        pygame.draw.rect(surface, self.bg_rgb, self.border, border_radius=self.border_radius)
         surface.blit(self.image, self.rect)
 
 
@@ -268,7 +280,7 @@ class Player(pygame.sprite.Sprite):
                 elif self.rect.bottom - 5 <= tourist.rect.top:
                     self.rect.bottom = tourist.rect.top
 
-                    
+
 # define building class
 class Building(pygame.sprite.Sprite):
     def __init__(self, file, xy):
@@ -318,9 +330,6 @@ class Tourist(pygame.sprite.Sprite):
         pickframe = random.randint(0, 2)
         self.surf = tourist_frames[pickframe]
         self.surf.set_colorkey(WHITE, RLEACCEL)
-
-        self.speedx = random.randint(-5, 5)
-        self.speedy = random.randint(-5, 5)
         
         sides = [
             [(random.randint(1, SCREEN_WIDTH - 1), 1), random.randint(-5, 5), random.randint(1, 5)],
@@ -391,6 +400,9 @@ def main():
 
         if game_state == GameState.NEWGAME:
             game_state = play_level(screen)
+        
+        if game_state == GameState.NEWGAME:
+            game_state = win_screen(screen)
 
         if game_state == GameState.GAMEOVER:
             game_state = end_screen(screen)
@@ -433,7 +445,9 @@ def title_screen(screen):
     )
 
     buttons = [play_btn, credits_btn, quit_btn]
-    bg = pygame.image.load('homebg.png').convert()
+    
+    bg = pygame.image.load('backgrounds/homebg.png').convert()
+    screen.fill(BLACK)
 
     # main loop
     while True:
@@ -442,9 +456,6 @@ def title_screen(screen):
             # register right clicks
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
-            
-            screen.fill(CRIMSON)
-            screen.blit(bg, (0,0))
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -453,6 +464,8 @@ def title_screen(screen):
             # window close
             elif event.type == QUIT:
                 return GameState.QUIT
+        
+        screen.blit(bg, (0,0))
 
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
@@ -465,7 +478,7 @@ def title_screen(screen):
 
 def credits_screen(screen):
     home_btn = UIElement(
-        center_position=(600, 500),
+        center_position=(600, 700),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
@@ -476,8 +489,14 @@ def credits_screen(screen):
     )
 
     buttons = [home_btn]
-    #credits_a = create_surface_with_text('A game by Elisabeth Ngo and Adam Wang')
-    #credits_b = create_surface_with_text('Created December, 2022 for Harvard CS50')
+    
+    bg = pygame.image.load('backgrounds/creditsbg.png').convert()
+    screen.fill(BLACK)
+    
+    credits = [
+        [create_surface_with_text('A game by Elisabeth Ngo and Adam Wang', 25, CRIMSON, (255, 214, 64)), (550, 100)],
+        [create_surface_with_text('Created December, 2022 for Harvard CS50', 25, CRIMSON, (255, 214, 64)), (550, 140)]
+    ]
 
     # main loop
     while True:
@@ -486,8 +505,6 @@ def credits_screen(screen):
             # register right clicks
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
-            
-            screen.fill(CRIMSON)
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -496,6 +513,12 @@ def credits_screen(screen):
             # window close
             elif event.type == QUIT:
                 return GameState.QUIT
+        
+        screen.blit(bg, (0,0))
+        
+        for credit in credits:
+            credit[0].set_colorkey((255, 214, 64), RLEACCEL)
+            screen.blit(credit[0], credit[0].get_rect(center=credit[1]))
 
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
@@ -508,7 +531,7 @@ def credits_screen(screen):
         
 def end_screen(screen):
     play_btn = UIElement(
-        center_position=(600, 300),
+        center_position=(600, 500),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
@@ -518,27 +541,29 @@ def end_screen(screen):
         action=GameState.NEWGAME,
     )
     home_btn = UIElement(
-        center_position=(600, 400),
+        center_position=(600, 600),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Home",
-        padding = 16,
+        padding = 20,
         border_radius = 4,
         action=GameState.TITLE,
     )
     quit_btn = UIElement(
-        center_position=(600, 500),
+        center_position=(600, 700),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
         text="Quit",
-        padding = 8,
+        padding = 16,
         border_radius = 4,
         action=GameState.QUIT
     )
 
     buttons = [play_btn, home_btn, quit_btn]
+    bg = pygame.image.load('backgrounds/gameoverbg.png').convert()
+    screen.fill(BLACK)
 
     # main loop
     while True:
@@ -547,8 +572,6 @@ def end_screen(screen):
             # register right clicks
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_up = True
-            
-            screen.fill(CRIMSON)
 
             # KEYDOWN event
             if event.type == KEYDOWN:
@@ -557,6 +580,8 @@ def end_screen(screen):
             # window close
             elif event.type == QUIT:
                 return GameState.QUIT
+            
+        screen.blit(bg, (0,0))
 
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
@@ -566,24 +591,92 @@ def end_screen(screen):
 
         pygame.display.flip()
 
-              
-def play_level(screen):
-    # set background
-    global infoqueue
 
-    # clear infoqueue
+def win_screen(screen):
+    play_btn = UIElement(
+        center_position=(600, 500),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Play again",
+        padding = 16,
+        border_radius = 4,
+        action=GameState.NEWGAME,
+    )
+    home_btn = UIElement(
+        center_position=(600, 600),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Home",
+        padding = 20,
+        border_radius = 4,
+        action=GameState.TITLE,
+    )
+    quit_btn = UIElement(
+        center_position=(600, 700),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text="Quit",
+        padding = 16,
+        border_radius = 4,
+        action=GameState.QUIT
+    )
+
+    buttons = [play_btn, home_btn, quit_btn]
+    bg = pygame.image.load('backgrounds/wingbg.png').convert()
+    screen.fill(BLACK)
+
+    # main loop
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            # register right clicks
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+
+            # KEYDOWN event
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return GameState.QUIT
+            # window close
+            elif event.type == QUIT:
+                return GameState.QUIT
+            
+        screen.blit(bg, (0,0))
+
+        for button in buttons:
+            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+            if ui_action is not None:
+                return ui_action
+            button.draw(screen)
+
+        pygame.display.flip()
+
+
+def play_level(screen):
+    global score
+    global time
+
+    score = 300
+    time = 0
     infoqueue.clear()
 
-    bg = pygame.image.load('grasstile.png').convert()
+    # set background
+    bg = pygame.image.load('backgrounds/grasstile.png').convert()
     pathmap = [
-        pygame.image.load('yardmaps/pixil-frame-0.png').convert(),
-        pygame.image.load('yardmaps/pixil-frame-1.png').convert(),
-        pygame.image.load('yardmaps/pixil-frame-2.png').convert(),
-        pygame.image.load('yardmaps/pixil-frame-3.png').convert(),
-        pygame.image.load('yardmaps/pixil-frame-4.png').convert(),
-        pygame.image.load('yardmaps/pixil-frame-5.png').convert()
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-0.png').convert(),
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-1.png').convert(),
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-2.png').convert(),
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-3.png').convert(),
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-4.png').convert(),
+        pygame.image.load('backgrounds/yardmaps/pixil-frame-5.png').convert()
     ]
 
+    # background
+    screen.fill(BLACK)
+    
     # set player
     player = Player()
 
@@ -665,9 +758,6 @@ def play_level(screen):
 
         # update tourist
         tourists.update(buildings, player)
-
-        # background
-        screen.fill(BLACK)
         
         # iterates through screen width and screen height to set down green grass tiles
         i = 0
@@ -728,7 +818,6 @@ def play_level(screen):
 
 
         # display score
-        global score
         scoretext = 'Score: ' + str(score)
         scoredisplay = create_surface_with_text(scoretext, 18, WHITE, CRIMSON)
         score_rect = scoredisplay.get_rect(center=(1100,20))
@@ -741,9 +830,11 @@ def play_level(screen):
 
         # set framerate
         clock.tick(30)
-        global time
         time += 1
         if time % 6 == 0:
             score -= 1
+
+        if score <= 0:
+            return GameState.GAMEOVER
 
 main()
