@@ -915,27 +915,28 @@ def play_level(screen):
                     checkpoint_sound.play()
                     del targets[0]
 
-                # check for empty list
-                if len(targets) == 0:
-                    # win
-                    win_sound.play()
-                    return GameState.WIN
-                # display on screen
-                instructions.append('Please find ' + targets[0][0] + '.')
-                goaltext = instructions[0]
-                goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
-                goal_rect = goaldisplay.get_rect(center=(600, 400))
-                goal_border = create_border_surface(goal_rect, 6)
-                pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
-                screen.blit(goaldisplay, goal_rect)
+                    # check for empty list
+                    if len(targets) == 0:
+                        # win
+                        win_sound.play()
+                        return GameState.WIN
 
-                pygame.display.flip()
+                    # display on screen
+                    instructions.append('Please find ' + targets[0][0] + '.')
+                    goaltext = instructions[0]
+                    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+                    goal_rect = goaldisplay.get_rect(center=(600, 400))
+                    goal_border = create_border_surface(goal_rect, 6)
+                    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+                    screen.blit(goaldisplay, goal_rect)
 
-                # wait
-                pygame.time.wait(2000)
+                    pygame.display.flip()
 
-                # clear
-                instructions.clear()     
+                    # wait
+                    pygame.time.wait(2000)
+
+                    # clear
+                    instructions.clear()       
             
             # set framerate
             clock.tick(30)
