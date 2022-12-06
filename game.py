@@ -913,30 +913,30 @@ def play_level(screen):
                 if info[3] == targets[0][1]:
                     checkedpoints.append(info[3])
                     checkpoint_sound.play()
-                del targets[0]
+                    del targets[0]
 
-                # check for empty list
-                if len(targets) == 0:
-                    # win
-                    win_sound.play()
-                    return GameState.WIN
+                    # check for empty list
+                    if len(targets) == 0:
+                        # win
+                        win_sound.play()
+                        return GameState.WIN
 
-                # display on screen
-                instructions.append('Please find ' + targets[0][0] + '.')
-                goaltext = instructions[0]
-                goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
-                goal_rect = goaldisplay.get_rect(center=(600, 400))
-                goal_border = create_border_surface(goal_rect, 6)
-                pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
-                screen.blit(goaldisplay, goal_rect)
+                    # display on screen
+                    instructions.append('Please find ' + targets[0][0] + '.')
+                    goaltext = instructions[0]
+                    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+                    goal_rect = goaldisplay.get_rect(center=(600, 400))
+                    goal_border = create_border_surface(goal_rect, 6)
+                    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+                    screen.blit(goaldisplay, goal_rect)
 
-                pygame.display.flip()
+                    pygame.display.flip()
 
-                # wait
-                pygame.time.wait(2000)
+                    # wait
+                    pygame.time.wait(2000)
 
-                # clear
-                instructions.clear()       
+                    # clear
+                    instructions.clear()       
             
             # set framerate
             clock.tick(30)
@@ -946,7 +946,7 @@ def play_level(screen):
 
             if score <= 0:
                 lose_sound.play()
-            return GameState.GAMEOVER
+                return GameState.GAMEOVER
         
         # update display
         pygame.display.flip()
