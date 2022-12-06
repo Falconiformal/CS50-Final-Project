@@ -20,7 +20,7 @@ from pygame.locals import (
 class GameState(Enum):
     GAMEOVER = -3
     CREDITS = -2
-    TITLE = -1
+    HOME = -1
     QUIT = 0
     NEWGAME = 1
     WIN = 2
@@ -35,6 +35,11 @@ CRIMSON = (99, 0, 0)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
+# tourists per second
+TPS = 5
+# starting score
+SCORE = 300
+
 # sound setup
 pygame.mixer.init()
 
@@ -43,7 +48,7 @@ clock = pygame.time.Clock()
 time = 0
 
 # score
-score = 300
+score = SCORE
 
 # player animation frames
 pframe = 4
@@ -100,6 +105,11 @@ targets = []
 
 # checkpoint info list
 infoqueue = []
+
+# checkpoint update list
+checkedpoints = []
+
+# deduction visual
 subtraction = []
 
 
@@ -210,7 +220,6 @@ class Player(pygame.sprite.Sprite):
         
     # moves sprite with keypresses
     def update(self, pressed_keys, buildings, tourists):
-        global score
         global pframe
         if pressed_keys[K_UP]:
             self.rect.move_ip(0, -5)
@@ -352,6 +361,7 @@ class Tourist(pygame.sprite.Sprite):
 
     def update(self, buildings, player):
         global score
+
         if random.randint(0, 10) == 5:
             while True:
                 self.speedx = random.randint(-5, 5)
@@ -388,11 +398,11 @@ def main():
     # set screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    game_state = GameState.TITLE
+    game_state = GameState.HOME
 
     while True:
-        if game_state == GameState.TITLE:
-            game_state = title_screen(screen)
+        if game_state == GameState.HOME:
+            game_state = home_screen(screen)
 
         if game_state == GameState.CREDITS:
             game_state = credits_screen(screen)
@@ -411,7 +421,7 @@ def main():
             return
 
 
-def title_screen(screen):
+def home_screen(screen):
     play_btn = UIElement(
         center_position=(600, 300),
         font_size=30,
@@ -419,7 +429,7 @@ def title_screen(screen):
         text_rgb=WHITE,
         text="Play",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.NEWGAME,
     )
     credits_btn = UIElement(
@@ -429,7 +439,7 @@ def title_screen(screen):
         text_rgb=WHITE,
         text="Credits",
         padding = 20,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.CREDITS
     )
     quit_btn = UIElement(
@@ -439,7 +449,7 @@ def title_screen(screen):
         text_rgb=WHITE,
         text="Quit",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.QUIT
     )
 
@@ -483,8 +493,8 @@ def credits_screen(screen):
         text_rgb=WHITE,
         text="Home",
         padding = 16,
-        border_radius = 4,
-        action=GameState.TITLE,
+        border_radius = 8,
+        action=GameState.HOME,
     )
 
     buttons = [home_btn]
@@ -536,7 +546,7 @@ def end_screen(screen):
         text_rgb=WHITE,
         text="Play again",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.NEWGAME,
     )
     home_btn = UIElement(
@@ -546,8 +556,8 @@ def end_screen(screen):
         text_rgb=WHITE,
         text="Home",
         padding = 20,
-        border_radius = 4,
-        action=GameState.TITLE,
+        border_radius = 8,
+        action=GameState.HOME,
     )
     quit_btn = UIElement(
         center_position=(600, 700),
@@ -556,7 +566,7 @@ def end_screen(screen):
         text_rgb=WHITE,
         text="Quit",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.QUIT
     )
 
@@ -599,7 +609,7 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Play again",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.NEWGAME,
     )
     home_btn = UIElement(
@@ -609,8 +619,8 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Home",
         padding = 20,
-        border_radius = 4,
-        action=GameState.TITLE,
+        border_radius = 8,
+        action=GameState.HOME,
     )
     quit_btn = UIElement(
         center_position=(600, 700),
@@ -619,7 +629,7 @@ def win_screen(screen):
         text_rgb=WHITE,
         text="Quit",
         padding = 16,
-        border_radius = 4,
+        border_radius = 8,
         action=GameState.QUIT
     )
 
@@ -658,9 +668,13 @@ def play_level(screen):
     global score
     global time
 
-    score = 300
+    score = SCORE
     time = 0
     infoqueue.clear()
+    subtraction.clear()
+    checkedpoints.clear()
+
+    paused = False
 
     # set background
     bg = pygame.image.load('backgrounds/grasstile.png').convert()
@@ -675,13 +689,25 @@ def play_level(screen):
 
     # background
     screen.fill(BLACK)
+
+    # feature buttons
+
+    buttons = [
+        ['home', pygame.image.load('buttons/home_btn.png').convert(), (30,30), pygame.image.load('buttons/home_btn_hover.png').convert()],
+        ['pause', pygame.image.load('buttons/pause_btn.png').convert(), (80,30), pygame.image.load('buttons/pause_btn_hover.png').convert()]
+    ]
+    play_btn = [pygame.image.load('buttons/play_btn.png').convert(), (80,30), pygame.image.load('buttons/play_btn_hover.png').convert()]
+    play_btn[0].set_colorkey(BLACK, RLEACCEL)
+    play_btn[2].set_colorkey(BLACK, RLEACCEL)
+    play_rect = play_btn[0].get_rect(center=play_btn[1])
+    play_highlight_rect = play_btn[2].get_rect(center=play_btn[1])
     
     # set player
     player = Player()
 
     # creates event to add tourist
     ADDTOURIST = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDTOURIST, 200) # adds 5 tourists every second
+    pygame.time.set_timer(ADDTOURIST, round(1000/TPS)) # adds 5 tourists every second
 
     # create sprite groups
     buildings = pygame.sprite.Group()
@@ -698,37 +724,23 @@ def play_level(screen):
         checkpoints.add(new_checkpoint)
         all_sprites.add(new_checkpoint)
 
-    all_sprites.add(player)
-
     # add locations to targets in random order
     sites = len(locations)
     while len(targets) != len(locations):
         num = random.randint(0, sites - 1)
         if locations[num] not in targets:
             targets.append(locations[num])
-    
-    # call the first find
-    instructions = []
-    instructions.append('Please find ' + targets[0][0] + '.')
-    goaltext = instructions[0]
-    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
-    goal_rect = goaldisplay.get_rect(center=(600, 400))
-    goal_border = create_border_surface(goal_rect, 6)
-    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
-    screen.blit(goaldisplay, goal_rect)
-    pygame.display.flip()
-
-    # wait
-    pygame.time.wait(2000)
-
-    # clear list
-    instructions.clear()
 
     
     # game loop
     while True:
 
+        mouse_up = False
+
         for event in pygame.event.get():
+            # register right clicks
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
             # KEYDOWN event
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -737,7 +749,7 @@ def play_level(screen):
             elif event.type == QUIT:
                 return GameState.QUIT
             # add tourist
-            elif event.type == ADDTOURIST:
+            elif event.type == ADDTOURIST and not paused:
                 new_tourist = Tourist()
                 tourists.add(new_tourist)
                 all_sprites.add(new_tourist)
@@ -745,55 +757,92 @@ def play_level(screen):
         # record keys pressed
         pressed_keys = pygame.key.get_pressed()
 
-        # update player sprite
-        player.update(pressed_keys, buildings, tourists)
+        # paused
+        if paused:
+            screen.blit(play_btn[0], play_btn[0].get_rect(center=play_btn[1]))
+            if play_rect.collidepoint(pygame.mouse.get_pos()):
+                screen.blit(play_btn[2], play_highlight_rect)
+                if mouse_up:
+                    paused = False
+                    mouse_up = False
 
-        # update checkpoints to display info
-        checkpoints.update(player, infoqueue)
+        if not paused:
+            # update player sprite
+            player.update(pressed_keys, buildings, tourists)
 
-        # update tourist
-        tourists.update(buildings, player)
-        
-        # iterates through screen width and screen height to set down green grass tiles
-        i = 0
-        j = 0
-        while i < SCREEN_WIDTH:
-            while j < SCREEN_HEIGHT:
-                screen.blit(bg, (i, j))
-                j += bg.get_height()
+            # update checkpoints to display info
+            checkpoints.update(player, infoqueue)
+
+            # update tourist
+            tourists.update(buildings, player)
+            
+            # iterates through screen width and screen height to set down green grass tiles
+            i = 0
             j = 0
-            i += bg.get_width()
+            while i < SCREEN_WIDTH:
+                while j < SCREEN_HEIGHT:
+                    screen.blit(bg, (i, j))
+                    j += bg.get_height()
+                j = 0
+                i += bg.get_width()
 
-        # lays down six path tiles
-        for k in range(3):
-            pathmap[k].set_colorkey(WHITE, RLEACCEL)
-            pathmap[k + 3].set_colorkey(WHITE, RLEACCEL)
-            screen.blit(pathmap[k], (k * pathmap[k].get_width(), 0))
-            screen.blit(pathmap[k + 3], (k * pathmap[k].get_width(), pathmap[k].get_height()))
+            # lays down six path tiles
+            for k in range(3):
+                pathmap[k].set_colorkey(WHITE, RLEACCEL)
+                pathmap[k + 3].set_colorkey(WHITE, RLEACCEL)
+                screen.blit(pathmap[k], (k * pathmap[k].get_width(), 0))
+                screen.blit(pathmap[k + 3], (k * pathmap[k].get_width(), pathmap[k].get_height()))
+                
+            # buildings, tourists on screen
+            for sprite in all_sprites:
+                screen.blit(sprite.surf, sprite.rect)
 
-        # draw player, buildings, tourists on screen
-        for sprite in all_sprites:
-            screen.blit(sprite.surf, sprite.rect)
+            # draw updated checkpoints
+            for building in building_list:
+                if building[0] in checkedpoints:
+                    checkedpoint = pygame.image.load('buildings/checkedpoint.png').convert()
+                    checkedpoint.set_colorkey(WHITE, RLEACCEL)
+                    checked_rect = checkedpoint.get_rect(center=building[3])
+                    screen.blit(checkedpoint, checked_rect)
 
-        # draw info labels
-        for info in infoqueue:
-            pygame.draw.rect(screen, CRIMSON, info[2], border_radius = 4)
-            screen.blit(info[0], info[1])
-        
-        for points in subtraction:
-            screen.blit(points[0], points[1])
+            # draw player
+            screen.blit(player.surf, player.rect)
 
-        # check for matches 
-        for info in infoqueue:
-            if info[3] == targets[0][1]:
-                del targets[0]
+            # draw info labels
+            for info in infoqueue:
+                pygame.draw.rect(screen, CRIMSON, info[2], border_radius = 4)
+                screen.blit(info[0], info[1])
+            
+            for points in subtraction:
+                screen.blit(points[0], points[1])
 
-                # check for empty list
-                if len(targets) == 0:
-                    # win
-                    return GameState.WIN
+            # display score
+            scoretext = 'Score: ' + str(score)
+            scoredisplay = create_surface_with_text(scoretext, 18, WHITE, CRIMSON)
+            score_rect = scoredisplay.get_rect(center=(1100,20))
+            border = create_border_surface(score_rect, 6)
+            pygame.draw.rect(screen, CRIMSON, border, border_radius = 6)
+            screen.blit(scoredisplay, score_rect)
+                
+            # draw buttons, add functionality
+            for button in buttons:
+                button[1].set_colorkey(BLACK, RLEACCEL)
+                button[3].set_colorkey(BLACK, RLEACCEL)
+                button_rect = button[1].get_rect(center=button[2])
+                highlight_rect = button[3].get_rect(center=button[2])
+                screen.blit(button[1], button_rect)
+                if button_rect.collidepoint(pygame.mouse.get_pos()):
+                    screen.blit(button[3], highlight_rect)
+                    if mouse_up:
+                        if button[0] == 'home':
+                            return GameState.HOME
+                        else:
+                            screen.blit(button[1], button_rect)
+                            paused = True       
 
-                # display on screen
+            # call the first find
+            if time == 0:
+                instructions = []
                 instructions.append('Please find ' + targets[0][0] + '.')
                 goaltext = instructions[0]
                 goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
@@ -801,33 +850,50 @@ def play_level(screen):
                 goal_border = create_border_surface(goal_rect, 6)
                 pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
                 screen.blit(goaldisplay, goal_rect)
-
                 pygame.display.flip()
-
                 # wait
                 pygame.time.wait(2000)
-
-                # clear
+                # clear list
                 instructions.clear()
+                
+            # check for matches 
+            for info in infoqueue:
+                if info[3] == targets[0][1]:
+                    checkedpoints.append(info[3])
+                    del targets[0]
 
-        # display score
-        scoretext = 'Score: ' + str(score)
-        scoredisplay = create_surface_with_text(scoretext, 18, WHITE, CRIMSON)
-        score_rect = scoredisplay.get_rect(center=(1100,20))
-        border = create_border_surface(score_rect, 6)
-        pygame.draw.rect(screen, CRIMSON, border, border_radius = 6)
-        screen.blit(scoredisplay, score_rect)
+                    # check for empty list
+                    if len(targets) == 0:
+                        # win
+                        return GameState.WIN
 
+                    # display on screen
+                    instructions.append('Please find ' + targets[0][0] + '.')
+                    goaltext = instructions[0]
+                    goaldisplay = create_surface_with_text(goaltext, 18, WHITE, CRIMSON)
+                    goal_rect = goaldisplay.get_rect(center=(600, 400))
+                    goal_border = create_border_surface(goal_rect, 6)
+                    pygame.draw.rect(screen, CRIMSON, goal_border, border_radius = 6)
+                    screen.blit(goaldisplay, goal_rect)
+
+                    pygame.display.flip()
+
+                    # wait
+                    pygame.time.wait(2000)
+
+                    # clear
+                    instructions.clear()       
+            
+            # set framerate
+            clock.tick(30)
+            time += 1
+            if time % 6 == 0:
+                score -= 1
+
+            if score <= 0:
+                return GameState.GAMEOVER
+        
         # update display
         pygame.display.flip()
-
-        # set framerate
-        clock.tick(30)
-        time += 1
-        if time % 6 == 0:
-            score -= 1
-
-        if score <= 0:
-            return GameState.GAMEOVER
 
 main()
