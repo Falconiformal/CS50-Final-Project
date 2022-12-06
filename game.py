@@ -524,6 +524,7 @@ def credits_screen(screen):
     bg = pygame.image.load('backgrounds/creditsbg.png').convert()
     screen.fill(BLACK)
     
+    # TODO
     credits = [
         [create_surface_with_text('A game by Elisabeth Ngo and Adam Wang', 25, CRIMSON, (255, 214, 64)), (550, 100)],
         [create_surface_with_text('Created December, 2022 for Harvard CS50', 25, CRIMSON, (255, 214, 64)), (550, 140)]
