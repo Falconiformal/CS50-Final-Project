@@ -24,6 +24,7 @@ class GameState(Enum):
     QUIT = 0
     NEWGAME = 1
     WIN = 2
+    INSTRUCTIONS = 3
 
 # window dimensions
 SCREEN_WIDTH = 1200
@@ -431,6 +432,9 @@ def main():
         if game_state == GameState.GAMEOVER:
             game_state = end_screen(screen)
         
+        if game_state == GameState.INSTRUCTIONS:
+            game_state = instructions_screen(screen)
+        
         if game_state == GameState.QUIT:
             pygame.quit()
             return
@@ -447,8 +451,18 @@ def home_screen(screen):
         border_radius = 8,
         action=GameState.NEWGAME,
     )
-    credits_btn = UIElement(
+    instructions_btn = UIElement(
         center_position=(600, 400),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text='Instructions',
+        padding = 20,
+        border_radius = 8,
+        action=GameState.INSTRUCTIONS
+    )
+    credits_btn = UIElement(
+        center_position=(600, 500),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
@@ -458,7 +472,7 @@ def home_screen(screen):
         action=GameState.CREDITS
     )
     quit_btn = UIElement(
-        center_position=(600, 500),
+        center_position=(600, 600),
         font_size=30,
         bg_rgb=CRIMSON,
         text_rgb=WHITE,
@@ -468,7 +482,7 @@ def home_screen(screen):
         action=GameState.QUIT
     )
 
-    buttons = [play_btn, credits_btn, quit_btn]
+    buttons = [play_btn, instructions_btn, credits_btn, quit_btn]
     
     bg = pygame.image.load('backgrounds/homebg.png').convert()
     screen.fill(BLACK)
@@ -701,6 +715,59 @@ def win_screen(screen):
         pygame.draw.rect(screen, BLACK, finalscoreborder, border_radius = 12)
         screen.blit(finalscore[0], score_rect)
 
+
+        for button in buttons:
+            ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
+            if ui_action is not None:
+                button_sound.play()
+                return ui_action
+            button.draw(screen)
+
+        pygame.display.flip()
+
+def instructions_screen(screen):
+    home_btn = UIElement(
+        center_position=(600, 700),
+        font_size=30,
+        bg_rgb=CRIMSON,
+        text_rgb=WHITE,
+        text='Home',
+        padding = 16,
+        border_radius = 8,
+        action=GameState.HOME,
+    )
+
+    buttons = [home_btn]
+    
+    bg = pygame.image.load('backgrounds/creditsbg.png').convert()
+    screen.fill(BLACK)
+    
+    instructions = [
+        [create_surface_with_text('Instructions:', 25, CRIMSON, (255, 214, 64)), (550, 100)],
+        [create_surface_with_text('Move player using arrow keys...', 25, CRIMSON, (255, 214, 64)), (550, 140)]
+    ]
+
+    # main loop
+    while True:
+        mouse_up = False
+        for event in pygame.event.get():
+            # register right clicks
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_up = True
+
+            # KEYDOWN event
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    return GameState.QUIT
+            # window close
+            elif event.type == QUIT:
+                return GameState.QUIT
+        
+        screen.blit(bg, (0,0))
+        
+        for instruction in instructions:
+            instruction[0].set_colorkey((255, 214, 64), RLEACCEL)
+            screen.blit(instruction[0], instruction[0].get_rect(center=instruction[1]))
 
         for button in buttons:
             ui_action = button.update(pygame.mouse.get_pos(), mouse_up)
