@@ -625,7 +625,7 @@ def win_screen(screen):
     )
 
     buttons = [play_btn, home_btn, quit_btn]
-    bg = pygame.image.load('backgrounds/wingbg.png').convert()
+    bg = pygame.image.load('backgrounds/winbg.png').convert()
     screen.fill(BLACK)
 
     # main loop
