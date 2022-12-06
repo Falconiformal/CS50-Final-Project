@@ -686,8 +686,8 @@ def win_screen(screen):
     finalscoretext = 'Score: ' + str(score)
     finalscore = [create_surface_with_text(finalscoretext, 40, WHITE, BLACK), (600, 350)]
 
-    # Sound Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
-    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
+    # Music Source: Square Foot Ocean by Martijn de Boer (NiGiD) (c) copyright 2022 
+    # Music License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license.
     # http://dig.ccmixter.org/files/NiGiD/65334 
     pygame.mixer.music.load('sounds/NiGiD_Square_Foot_Ocean.mp3')
     pygame.mixer.music.play(loops=-1)
@@ -797,8 +797,8 @@ def play_level(screen):
 
     paused = False
 
-    # Sound Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
-    # Sound License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
+    # Music Source: Floating Through Time (SAW mix) by stellarartwars (c) copyright 2016 
+    # Music License: Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. 
     # http://dig.ccmixter.org/files/stellarartwars/55017 Ft: Jeris
     pygame.mixer.music.load('sounds/stellarartwars_Floating_Through_Time.mp3')
     pygame.mixer.music.play(loops=-1)
