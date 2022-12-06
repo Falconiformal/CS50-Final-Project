@@ -35,6 +35,9 @@ CRIMSON = (99, 0, 0)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
+# sound setup
+pygame.mixer.init()
+
 # clock setup (framerate)
 clock = pygame.time.Clock()
 time = 0
@@ -274,7 +277,7 @@ class Player(pygame.sprite.Sprite):
                 elif self.rect.bottom - 5 <= tourist.rect.top:
                     self.rect.bottom = tourist.rect.top
 
-                    
+
 # define building class
 class Building(pygame.sprite.Sprite):
     def __init__(self, file, xy):
@@ -378,9 +381,6 @@ class Tourist(pygame.sprite.Sprite):
 def main():
     # initialize
     pygame.init()
-    
-    global score
-    global time
 
     # set screen
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -395,8 +395,6 @@ def main():
             game_state = credits_screen(screen)
 
         if game_state == GameState.NEWGAME:
-            score = 300
-            time = 0
             game_state = play_level(screen)
         
         if game_state == GameState.NEWGAME:
@@ -654,6 +652,13 @@ def win_screen(screen):
 
 
 def play_level(screen):
+    global score
+    global time
+
+    score = 300
+    time = 0
+    infoqueue.clear()
+
     # set background
     bg = pygame.image.load('backgrounds/grasstile.png').convert()
     pathmap = [
@@ -751,7 +756,6 @@ def play_level(screen):
             screen.blit(points[0], points[1])
 
         # display score
-        global score
         scoretext = 'Score: ' + str(score)
         scoredisplay = create_surface_with_text(scoretext, 18, WHITE, CRIMSON)
         score_rect = scoredisplay.get_rect(center=(1100,20))
@@ -764,7 +768,6 @@ def play_level(screen):
 
         # set framerate
         clock.tick(30)
-        global time
         time += 1
         if time % 6 == 0:
             score -= 1
