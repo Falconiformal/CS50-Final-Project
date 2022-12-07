@@ -876,7 +876,7 @@ def play_level(screen):
 
     # creates event to add tourist
     ADDTOURIST = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDTOURIST, round(1000/TPS)) # adds 5 tourists every second
+    pygame.time.set_timer(ADDTOURIST, round(1000/TPS)) # adds tourists every second
 
     # create sprite groups
     buildings = pygame.sprite.Group()
